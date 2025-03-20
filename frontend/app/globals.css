@@ -1,26 +1,61 @@
 @import "tailwindcss";
 
-:root {
+@theme {
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: 'Inter', sans-serif; /* Example of setting a custom font */
+  --font-mono: 'Fira Code', monospace; /* Example of setting a custom mono font */
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  @theme {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+/* Apply smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Chat container */
+.chat-container {
+  @apply max-w-md mx-auto p-4;
+}
+
+/* Chat messages */
+.chat-box {
+  @apply border border-gray-700 rounded-lg p-4 h-80 overflow-auto flex flex-col space-y-2;
+}
+
+/* User message */
+.user-message {
+  @apply bg-blue-600 text-white p-2 rounded-lg self-end max-w-xs;
+}
+
+/* Assistant message */
+.assistant-message {
+  @apply bg-gray-700 text-white p-2 rounded-lg max-w-xs;
+}
+
+/* Input field */
+.chat-input {
+  @apply flex-1 p-2 border border-gray-700 rounded-lg bg-gray-800 text-white;
+}
+
+/* Send button */
+.send-button {
+  @apply ml-2 p-2 bg-blue-600 hover:bg-blue-700 rounded-lg;
+}
+
+/* Code block styling */
+pre {
+  @apply bg-black p-2 rounded text-green-400 text-sm overflow-auto;
 }
