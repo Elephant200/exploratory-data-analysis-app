@@ -1,4 +1,5 @@
 import os
+import json
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
@@ -40,9 +41,9 @@ async def get_response_stream(contents: types.ContentListUnion) -> StreamingResp
                         contents=contents,
                         config=CONFIG,
                     ):
-                yield chunk.text
+                yield json.dumps(chunk.to_json_dict()) + "\n"
             
-        return StreamingResponse(content=stream_response())
+        return StreamingResponse(content=stream_response(), media_type="text/event-stream")
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
