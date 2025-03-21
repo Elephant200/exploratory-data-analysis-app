@@ -16,7 +16,10 @@ export default function useChat() {
   const sendMessage = async (input: string) => {
     const updatedMessages: ChatMessage[] = [
       ...messages,
-      { role: "user", parts: [{ text: input }] },
+      {
+        role: "user",
+        parts: [{ text: input }]
+      } as ChatMessage
     ];
 
     setMessages(updatedMessages);
@@ -32,11 +35,7 @@ export default function useChat() {
 
     if (!reader) return;
 
-    let assistantMessage: ChatMessage = {
-      role: "assistant",
-      parts: [],
-    };
-
+    let assistantMessage: ChatMessage = { role: "assistant", parts: [] };
     setMessages((prev) => [...prev, assistantMessage]);
 
     while (true) {
@@ -49,13 +48,12 @@ export default function useChat() {
       try {
         const part: Part = JSON.parse(chunk);
         assistantMessage.parts.push(part);
-
         setMessages((prev) => [
           ...prev.slice(0, -1),
           { ...assistantMessage },
         ]);
       } catch (err) {
-        console.error("Streaming JSON parse error:", err);
+        console.error("Stream chunk parse error:", err);
       }
     }
   };
