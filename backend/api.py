@@ -43,7 +43,7 @@ async def get_response_stream(contents: types.ContentListUnion) -> StreamingResp
                     ):
                 yield json.dumps(chunk.to_json_dict()) + "\n"
             
-        return StreamingResponse(content=stream_response(), media_type="text/event-stream")
+        return StreamingResponse(content=stream_response(), media_type="application/x-ndjson")
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
