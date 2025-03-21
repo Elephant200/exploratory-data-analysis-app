@@ -32,7 +32,7 @@ async def get_response_stream(contents: types.ContentListUnion) -> StreamingResp
         contents (ContentListUnion): The user's chat history, including messages from both the user and the model. This must include the latest message.
 
     Returns:
-        StreamingResponse: A FastAPI compatible streaming response
+        StreamingResponse: A FastAPI compatible streaming response containing the model's response as newline separated JSON objects, each containing parts like text.
     """
     try:
         async def stream_response():
