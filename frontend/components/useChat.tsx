@@ -38,26 +38,35 @@ export default function useChat() {
 
     let assistantMessage: ChatMessage = { role: "model", parts: [] };
     setMessages((prev) => [...prev, assistantMessage]);
+    
+    let leftover = "";
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
-
-      const chunk = decoder.decode(value, { stream: true }).trim();
-      if (!chunk) continue;
+    
+      const chunk = decoder.decode(value, { stream: true });
       console.log("chunk", chunk);
-      try {
-        const part: Part = JSON.parse(chunk);
-
-        if (part.text?.trim() === "") return;
-
-        assistantMessage.parts.push(part);
-        setMessages((prev) => [
-          ...prev.slice(0, -1),
-          { ...assistantMessage },
-        ]);
-      } catch (err) {
-        console.error("JSON parse error:", err);
+      const lines = (leftover + chunk).split("\n");
+      leftover = lines.pop() ?? ""; // hold onto last partial line
+    
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+    
+        try {
+          const part: Part = JSON.parse(trimmed);
+    
+          if (part.text?.trim() === "") continue;
+    
+          assistantMessage.parts.push(part);
+          setMessages((prev) => [
+            ...prev.slice(0, -1),
+            { ...assistantMessage },
+          ]);
+        } catch (err) {
+          console.error("JSON parse error:", err, trimmed);
+        }
       }
     }
   };

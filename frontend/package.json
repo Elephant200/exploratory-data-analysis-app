@@ -10,15 +10,16 @@
   },
   "dependencies": {
     "highlight.js": "^11.11.1",
+    "markdown-it": "^14.1.0",
     "next": "15.2.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-markdown": "^10.1.0",
     "rehype-highlight": "^7.0.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/markdown-it": "^14.1.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

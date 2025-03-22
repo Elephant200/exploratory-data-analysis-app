@@ -33,7 +33,7 @@ html {
 
 /* Chat messages */
 .chat-box {
-  @apply border border-gray-700 rounded-lg p-4 h-80 overflow-auto flex flex-col space-y-2;
+  @apply border border-gray-700 rounded-lg p-4 h-80 overflow-auto max-h-screen flex flex-col space-y-2;
 }
 
 /* User message */
