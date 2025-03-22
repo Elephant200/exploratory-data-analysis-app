@@ -24,14 +24,7 @@ export default function AssistantMessage({ parts }: AssistantMessageProps) {
                 <p {...props} className="text-sm leading-relaxed" />
               ),
               pre: (props: HTMLAttributes<HTMLPreElement>) => (
-<<<<<<< HEAD
-                <pre
-                  {...props}
-                  className="bg-gray-900 text-white p-3 rounded overflow-auto text-xs"
-                />
-=======
                 <pre {...props} className="bg-gray-900 text-white p-3 rounded overflow-auto text-xs" />
->>>>>>> 6141ca73f6701c9462069c479cba6fa802903fe6
               ),
               code: (props: HTMLAttributes<HTMLElement>) => (
                 <code {...props} className="text-green-400" />
@@ -42,11 +35,8 @@ export default function AssistantMessage({ parts }: AssistantMessageProps) {
           </ReactMarkdown>
         ) : null
       )}
-<<<<<<< HEAD
-=======
 
       {/* Render code_execution outputs separately */}
->>>>>>> 6141ca73f6701c9462069c479cba6fa802903fe6
       {parts.map((part, index) =>
         part.code_execution ? (
           <div

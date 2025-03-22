@@ -19,8 +19,14 @@ client = genai.Client(api_key = API_KEY)
 with open("system_instruction.txt", "r") as f:
     SYSTEM_INSTRUCTION = f.read()
 
+TOOLS = [
+    types.Tool(google_search=types.GoogleSearch()),
+    types.Tool(code_execution=types.ToolCodeExecution()),
+]
+
 CONFIG = types.GenerateContentConfig(
-    system_instruction=SYSTEM_INSTRUCTION
+    system_instruction=SYSTEM_INSTRUCTION,
+    tools=TOOLS
 )
 
 @app.post("/chat/")
@@ -41,7 +47,9 @@ async def get_response_stream(contents: types.ContentListUnion) -> StreamingResp
                         contents=contents,
                         config=CONFIG,
                     ):
-                yield json.dumps(chunk.to_json_dict()) + "\n"
+
+                print("Chunk:", chunk.candidates[0].content.parts[0].to_json_dict())
+                yield json.dumps(chunk.candidates[0].content.parts[0].to_json_dict()) + "\n"
             
         return StreamingResponse(content=stream_response(), media_type="application/x-ndjson")
     

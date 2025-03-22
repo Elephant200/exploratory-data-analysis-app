@@ -6,7 +6,7 @@ interface Part {
 }
 
 interface ChatMessage {
-  role: "user" | "assistant";
+  role: "user" | "model";
   parts: Part[];
 }
 
@@ -23,6 +23,7 @@ export default function useChat() {
     ];
 
     setMessages(updatedMessages);
+    console.log("updatedMessages", updatedMessages);
 
     const response = await fetch("/api/chat", {
       method: "POST",
@@ -35,7 +36,7 @@ export default function useChat() {
 
     if (!reader) return;
 
-    let assistantMessage: ChatMessage = { role: "assistant", parts: [] };
+    let assistantMessage: ChatMessage = { role: "model", parts: [] };
     setMessages((prev) => [...prev, assistantMessage]);
 
     while (true) {
@@ -44,16 +45,19 @@ export default function useChat() {
 
       const chunk = decoder.decode(value, { stream: true }).trim();
       if (!chunk) continue;
-
+      console.log("chunk", chunk);
       try {
         const part: Part = JSON.parse(chunk);
+
+        if (part.text?.trim() === "") return;
+
         assistantMessage.parts.push(part);
         setMessages((prev) => [
           ...prev.slice(0, -1),
           { ...assistantMessage },
         ]);
       } catch (err) {
-        console.error("Stream chunk parse error:", err);
+        console.error("JSON parse error:", err);
       }
     }
   };
