@@ -1,34 +1,20 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { md } from "@/lib/markdown";
 
 interface Props {
-  textParts: string[]; // streamed from Gemini
+  textParts: string[];
 }
 
 export default function StreamingMarkdownRenderer({ textParts }: Props) {
-  const [blocks, setBlocks] = useState<string[]>([]); // rendered blocks
-  const [buffer, setBuffer] = useState<string>("");   // building current block
+  const [blocks, setBlocks] = useState<string[]>([]);
 
   useEffect(() => {
     const fullText = textParts.join("");
+    console.log("StreamingMarkdown input:", fullText);
 
-    const tokens = md.parse(fullText, {});
-    const blockEnds = tokens.reduce<number[]>((indexes, token, i) => {
-      if (token.nesting === 0 && token.level === 0) {
-        indexes.push(i);
-      }
-      return indexes;
-    }, []);
-
-    // Convert each complete block to rendered HTML
-    const renderedBlocks = blockEnds.map((endIndex, i, arr) => {
-      const startIndex = arr[i - 1] ?? 0;
-      const tokenSlice = tokens.slice(startIndex, endIndex + 1);
-      return md.renderer.render(tokenSlice, md.options, {});
-    });
-
-    setBlocks(renderedBlocks);
+    const html = md.render(fullText);
+    setBlocks([html]);
   }, [textParts]);
 
   return (

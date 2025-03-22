@@ -17,6 +17,8 @@ export default function AssistantMessage({ parts }: AssistantMessageProps) {
     .map((p) => p.text)
     .filter((t): t is string => !!t);
 
+  console.log("textParts", textParts);
+
   return (
     <div className="assistant-message space-y-4">
       <StreamingMarkdownRenderer textParts={textParts} />
