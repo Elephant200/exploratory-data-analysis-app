@@ -42,19 +42,27 @@ static_directory = os.path.join(os.path.dirname(__file__), "static")
 app.mount("/static", StaticFiles(directory=static_directory), name="static")
 
 # Simulating a database with an in-memory list
-chat_history: types.ContentListUnion = [types.Content(parts=[types.Part.from_text(text=WELCOME_MESSAGE)], role="model")]
+chat_history: types.ContentListUnion = [
+    types.Content(parts=[types.Part.from_text(text=WELCOME_MESSAGE)],
+                  role="model")
+]
 
 # Get the absolute path to the project root
 project_root = os.path.dirname(os.path.abspath(__file__))
+
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request) -> HTMLResponse:
     return templates.TemplateResponse("index.html", {"request": request})
 
+
 @app.get("/chat", response_class=HTMLResponse)
 async def chat(request: Request) -> HTMLResponse:
     global chat_history
-    chat_history = [types.Content(parts=[types.Part.from_text(text=WELCOME_MESSAGE)], role="model")]
+    chat_history = [
+        types.Content(parts=[types.Part.from_text(text=WELCOME_MESSAGE)],
+                      role="model")
+    ]
     return templates.TemplateResponse(
         "chat.html",
         {
@@ -64,21 +72,22 @@ async def chat(request: Request) -> HTMLResponse:
         },
     )
 
+
 @app.post("/chat")
-async def get_chat_response(request: Request, message: str = Form(...)) -> HTMLResponse:
+async def get_chat_response(
+    request: Request, message: str = Form(...)) -> HTMLResponse:
     # Get response from Gemini using chat history
-    chat_history.append(types.Content(role="user", parts=[types.Part(text=message)]))
+    chat_history.append(
+        types.Content(role="user", parts=[types.Part(text=message)]))
 
     # Print the chat history for debugging
     print("Chat History before Gemini API call:")
     for item in chat_history:
         print(item.to_json_dict())
 
-    bot_response = await get_response(
-        messages=chat_history,
-        system_prompt=SYSTEM_PROMPT,
-        dataset=uploaded_file
-    )
+    bot_response = await get_response(messages=chat_history,
+                                      system_prompt=SYSTEM_PROMPT,
+                                      dataset=uploaded_file)
 
     # Render Markdown to HTML (with safety features)
     bot_response_html = render_html_response(bot_response)
@@ -98,28 +107,31 @@ async def get_chat_response(request: Request, message: str = Form(...)) -> HTMLR
 
     return response_html
 
+
 @app.post("/upload")
-async def upload_file(request: Request, file: UploadFile = File(...)) -> Dict[str, str]:
+async def upload_file(
+    request: Request, file: UploadFile = File(...)) -> Dict[str, str]:
     """
     Handle file uploads and process datasets.
     """
     global chat_history
     global uploaded_file
-    try: 
+    try:
         #contents = await file.read()
         uploaded_file = upload_file_to_gemini(file.file)
-        chat_history.append(types.Content(role="user", parts=[types.Part(text=f"File uploaded: {file.filename}")]))
+        chat_history.append(
+            types.Content(
+                role="user",
+                parts=[types.Part(text=f"File uploaded: {file.filename}")]))
 
         # Print the chat history after file upload
         print("Chat History after file upload:")
         for item in chat_history:
             print(item.to_json_dict())
-    
-        bot_response = await get_response(
-            messages=chat_history,
-            system_prompt=SYSTEM_PROMPT,
-            dataset=uploaded_file
-        )
+
+        bot_response = await get_response(messages=chat_history,
+                                          system_prompt=SYSTEM_PROMPT,
+                                          dataset=uploaded_file)
 
         bot_response_html = render_html_response(bot_response)
 
@@ -144,9 +156,11 @@ async def upload_file(request: Request, file: UploadFile = File(...)) -> Dict[st
             "bot_message.html",
             {
                 "request": request,
-                "bot_response_html": f"<p><strong>Error:</strong> {str(e)}</p>",
+                "bot_response_html":
+                f"<p><strong>Error:</strong> {str(e)}</p>",
             },
         )
+
 
 @app.get("/api/chat_history")
 async def get_chat_history() -> List[Dict[str, object]]:
@@ -157,11 +171,15 @@ async def get_chat_history() -> List[Dict[str, object]]:
 @app.get("/api/clear_history")
 async def clear_history() -> Dict[str, str]:
     global chat_history
-    chat_history = [types.Content(parts=[types.Part.from_text(text=WELCOME_MESSAGE)], role="model")]
+    chat_history = [
+        types.Content(parts=[types.Part.from_text(text=WELCOME_MESSAGE)],
+                      role="model")
+    ]
     return {"message": "Chat history cleared"}
 
 
-def render_html_response(bot_response: Dict[str, str] | List[types.Part]) -> str:
+def render_html_response(
+        bot_response: Dict[str, str] | List[types.Part]) -> str:
     if type(bot_response) == dict:
         bot_response_html = f"<p><strong>Error:</strong> {bot_response['error']}</p>"
     else:
@@ -169,14 +187,19 @@ def render_html_response(bot_response: Dict[str, str] | List[types.Part]) -> str
         for part in bot_response:
             print(part.to_json_dict())
             if part.text:
-                bot_response_html += markdown2.markdown(part.text, extras=['fenced-code-blocks', 'code-friendly', 'tables'])
+                bot_response_html += markdown2.markdown(
+                    part.text,
+                    extras=['fenced-code-blocks', 'code-friendly', 'tables'])
             elif part.executable_code:
                 bot_response_html += f"<br/>Python Code:<pre><code>{part.executable_code.code}</code></pre><br/>"
             elif part.code_execution_result:
                 bot_response_html += f"<br/>Code Output:<pre><code>{part.code_execution_result.output}</code></pre><br/>"
             elif part.inline_data:
                 try:
-                    base64_data = base64.b64encode(part.inline_data.data).decode("utf-8") if isinstance(part.inline_data.data, bytes) else part.inline_data.data
+                    base64_data = base64.b64encode(
+                        part.inline_data.data).decode("utf-8") if isinstance(
+                            part.inline_data.data,
+                            bytes) else part.inline_data.data
                     bot_response_html += f'<img src="data:image/png;base64,{base64_data}" alt="Generated Image" style="max-width: 100%; height: auto;"/>'
                 except Exception as e:
                     bot_response_html += f"<p><strong>Error:</strong> {part.inline_data}<br/>{e}</p>"
