@@ -1,0 +1,31 @@
+entrypoint = "app/main.py"
+modules = ["python-3.12", "web", "nodejs-20"]
+
+[nix]
+channel = "stable-24_05"
+
+[unitTest]
+language = "python3"
+
+[gitHubImport]
+requiredFiles = [".replit", "replit.nix"]
+
+[deployment]
+run = ["python3", "app/main.py"]
+deploymentTarget = "cloudrun"
+
+[workflows]
+runButton = "Run application"
+
+[[workflows.workflow]]
+name = "Run application"
+mode = "sequential"
+author = 3947996
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pip install -r app/requirements.txt"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python app/main.py"
