@@ -1,4 +1,0 @@
-google-genai
-fastapi
-python-dotenv
-uvicorn
