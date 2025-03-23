@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Exploratory Data Analysis App{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4 center">Welcome to the Exploratory Data Analysis App</h1>
+    <p>This app allows you to upload a dataset and perform exploratory data analysis on it. You can upload a dataset in CSV format and view the summary statistics, missing values, and correlation matrix of the dataset. All you have to do is chat with the bot and ask questions!</p>
+    <button class="btn btn-primary mt-3" onclick="window.location.href='/chat'">Start Analyzing</button>
+</div>
+{% endblock %}

@@ -49,6 +49,10 @@ project_root = os.path.dirname(os.path.abspath(__file__))
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request) -> HTMLResponse:
+    return templates.TemplateResponse("index.html", {"request": request})
+
+@app.get("/chat", response_class=HTMLResponse)
+async def chat(request: Request) -> HTMLResponse:
     global chat_history
     chat_history = [types.Content(parts=[types.Part.from_text(text=WELCOME_MESSAGE)], role="model")]
     return templates.TemplateResponse(
@@ -61,7 +65,7 @@ async def read_root(request: Request) -> HTMLResponse:
     )
 
 @app.post("/chat")
-async def chat(request: Request, message: str = Form(...)) -> HTMLResponse:
+async def get_chat_response(request: Request, message: str = Form(...)) -> HTMLResponse:
     # Get response from Gemini using chat history
     chat_history.append(types.Content(role="user", parts=[types.Part(text=message)]))
     bot_response = await get_response(
