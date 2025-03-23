@@ -2,6 +2,7 @@ from google import genai
 from google.genai import types
 import logging
 from typing import Any, List, Literal
+import os
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -14,7 +15,7 @@ TOOLS = [
 ]
 
 # Configure OpenAI client
-client = genai.Client()
+client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
 async def get_response(
     messages: List[types.Content],
