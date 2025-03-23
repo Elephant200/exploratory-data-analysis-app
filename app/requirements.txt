@@ -4,3 +4,4 @@ python-multipart
 python-dotenv
 uvicorn
 markdown2
+pandas
