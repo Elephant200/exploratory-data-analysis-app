@@ -48,7 +48,7 @@ export default function useChat() {
       const chunk = decoder.decode(value, { stream: true });
       console.log("chunk", chunk);
       const lines = (leftover + chunk).split("\n");
-      leftover = lines.pop() ?? ""; // hold onto last partial line
+      leftover = lines.pop() ?? "";
     
       for (const line of lines) {
         const trimmed = line.trim();
