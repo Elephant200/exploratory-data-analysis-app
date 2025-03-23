@@ -9,6 +9,10 @@ logger = logging.getLogger(__name__)
 
 GEMINI_DEFAULT_MODEL = "gemini-2.0-flash"
 
+TOOLS = [
+    {"code_execution": {}}
+]
+
 # Configure OpenAI client
 client = genai.Client()
 
@@ -30,14 +34,13 @@ async def get_response(
     """
     try:
         logger.info(messages)
-        if messages is None or len(messages) == 0 or messages[-1].parts is None or len(messages[-1].parts) == 0:
-            return [types.Part.from_text(text="Work with me here - I can't answer without a message!")]
 
         response = await client.aio.models.generate_content(
             model=model,
             contents=messages,
             config=types.GenerateContentConfig(
-                system_instruction=system_prompt
+                system_instruction=system_prompt,
+                tools=TOOLS
             )
         )
         
@@ -46,3 +49,10 @@ async def get_response(
     except Exception as e:
         logger.error(f"Gemini API error: {str(e)}")
         return [types.Part.from_text(text=f"Sorry, I ran into an error: {str(e)}")]
+
+
+def upload_file_to_gemini(file) -> types.File:
+    """
+    Upload a file to Google Gemini.
+    """
+    return client.files.upload(file=file, config=types.UploadFileConfig(mime_type="text/csv"))

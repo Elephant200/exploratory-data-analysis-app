@@ -11,6 +11,23 @@ body {
     color: var(--text-color);
 }
 
+code {
+    background-color: #111111; /* Distinct background color for code blocks */
+    color: #ffffff; /* Light text color for better contrast */
+}
+
+pre {
+    background-color: #111111; /* Distinct background color for code blocks */
+    color: #ffffff; /* Light text color for better contrast */
+    padding: 10px;
+    border-radius: 5px;
+    font-family: "Courier New", Courier, monospace;
+    display: block; /* Ensure code blocks take up their own line */
+    overflow-x: auto; /* Add horizontal scrolling for long code lines */
+    max-width: 100%; /* Prevent code blocks from exceeding container width */
+    white-space: pre-wrap; /* Wrap long lines */
+}
+
 .chat-container {
     height: 60vh;
     overflow-y: auto;
@@ -45,6 +62,24 @@ body {
     background-color: var(--bot-message-bg);
     color: var(--text-color);
     align-self: flex-start;
+}
+
+.bot-message {
+    background-color: var(--bot-message-bg);
+    color: var(--text-color);
+    align-self: flex-start;
+    width: 100%; /* Ensure all bot messages have the same width */
+    max-width: 80%; /* Limit the width of bot messages */
+    padding: 15px;
+    box-sizing: border-box; /* Include padding in width calculation */
+    word-wrap: break-word; /* Break long words to prevent overflow */
+    border: 1px solid #3a3a3a; /* Optional: Add a border for better separation */
+}
+
+.bot-message pre, .bot-message code {
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .typing-indicator {

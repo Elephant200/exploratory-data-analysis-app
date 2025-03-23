@@ -1,9 +1,10 @@
-import os
+import base64
 import logging
+import os
 
 from dotenv import load_dotenv
 
-from fastapi import FastAPI, Form, Request
+from fastapi import FastAPI, File, Form, Request, UploadFile
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
@@ -15,15 +16,21 @@ import markdown2
 from typing import List, Dict
 import uuid
 
-from gemini_client import get_response
+from gemini_client import get_response, upload_file_to_gemini
 
 load_dotenv()
 
 CHAT_TITLE = "Exploratory Data Analysis with Google Gemini"
 WELCOME_MESSAGE = "Welcome to the EDA chatbot! Ask me anything about data analysis."
 SYSTEM_PROMPT = """
-You are a helpful data analysis assistant.
+You are a helpful data analysis assistant. 
+
+You perform exploratory analysis based on data the user can upload.
+
+Please perform analysis as soon as the user uploads a file. You may use your own judgment to determine the best way to analyze the data. This should be an AI-driven analysis; make your own research questions and answer them. Include at least one visualization.
 """
+
+uploaded_data = None
 
 app = FastAPI()
 
@@ -63,10 +70,7 @@ async def chat(request: Request, message: str = Form(...)) -> HTMLResponse:
     )
 
     # Render Markdown to HTML (with safety features)
-    if type(bot_response) == dict:
-        bot_response_html = f"<p><strong>Error:</strong> {bot_response['error']}</p>"
-    else:
-        bot_response_html = markdown2.markdown(bot_response[0].text, safe_mode="escape", extras=['fenced-code-blocks', 'code-friendly', 'tables'])
+    bot_response_html = render_html_response(bot_response)
 
     # Add bot response to chat history
     chat_history.append(types.Content(role="model", parts=bot_response))
@@ -78,12 +82,57 @@ async def chat(request: Request, message: str = Form(...)) -> HTMLResponse:
         {
             "request": request,
             "bot_response_html": bot_response_html,
-            "message_id": message_id,
         },
     )
 
     return response_html
 
+@app.post("/upload")
+async def upload_file(request: Request, file: UploadFile = File(...)) -> Dict[str, str]:
+    """
+    Handle file uploads and process datasets.
+    """
+    global chat_history
+    global uploaded_file
+    try: 
+        #contents = await file.read()
+        uploaded_file = upload_file_to_gemini(file.file)
+        chat_history.append(types.Content(role="user", parts=[types.Part(text=f"Uploaded file {file.filename}")]))
+        print(file.content_type)
+        print(file)
+
+        chat_history.append(uploaded_file)
+        bot_response = await get_response(
+            messages=chat_history,
+            system_prompt=SYSTEM_PROMPT,
+        )
+
+        bot_response_html = render_html_response(bot_response)
+
+        # Add bot response to chat history
+        chat_history.append(types.Content(role="model", parts=bot_response))
+
+        message_id = str(uuid.uuid4())
+
+        response_html = templates.TemplateResponse(
+            "bot_message.html",
+            {
+                "request": request,
+                "bot_response_html": bot_response_html,
+                "message_id": message_id
+            },
+        )
+
+        return response_html
+    except Exception as e:
+        print(e)
+        return templates.TemplateResponse(
+            "bot_message.html",
+            {
+                "request": request,
+                "bot_response_html": f"<p><strong>Error:</strong> {str(e)}</p>",
+            },
+        )
 
 @app.get("/api/chat_history")
 async def get_chat_history() -> List[Dict[str, object]]:
@@ -96,3 +145,27 @@ async def clear_history() -> Dict[str, str]:
     global chat_history
     chat_history = [types.Content(parts=[types.Part.from_text(text=WELCOME_MESSAGE)], role="model")]
     return {"message": "Chat history cleared"}
+
+
+def render_html_response(bot_response: Dict[str, str] | List[types.Part]) -> str:
+    if type(bot_response) == dict:
+        bot_response_html = f"<p><strong>Error:</strong> {bot_response['error']}</p>"
+    else:
+        bot_response_html = ""
+        for part in bot_response:
+            print(part.to_json_dict())
+            if part.text:
+                bot_response_html += markdown2.markdown(part.text, extras=['fenced-code-blocks', 'code-friendly', 'tables'])
+            elif part.executable_code:
+                bot_response_html += f"<br/>Python Code:<pre><code>{part.executable_code.code}</code></pre><br/>"
+            elif part.code_execution_result:
+                bot_response_html += f"<br/>Code Output:<pre><code>{part.code_execution_result.output}</code></pre><br/>"
+            elif part.inline_data:
+                try:
+                    base64_data = base64.b64encode(part.inline_data.data).decode("utf-8") if isinstance(part.inline_data.data, bytes) else part.inline_data.data
+                    bot_response_html += f'<img src="data:image/png;base64,{base64_data}" alt="Generated Image" style="max-width: 100%; height: auto;"/>'
+                except Exception as e:
+                    bot_response_html += f"<p><strong>Error:</strong> {part.inline_data}<br/>{e}</p>"
+            else:
+                bot_response_html += f"<p><strong>Error:</strong> Unknown part type {part}</p>"
+    return bot_response_html
