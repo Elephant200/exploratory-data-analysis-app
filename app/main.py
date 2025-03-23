@@ -15,7 +15,7 @@ import markdown2
 from typing import List, Dict
 import uuid
 
-from app.gemini_client import get_response
+from gemini_client import get_response
 
 load_dotenv()
 
@@ -35,7 +35,7 @@ static_directory = os.path.join(os.path.dirname(__file__), "static")
 app.mount("/static", StaticFiles(directory=static_directory), name="static")
 
 # Simulating a database with an in-memory list
-chat_history: types.ContentListUnion = []
+chat_history: types.ContentListUnion = [types.Content(parts=[types.Part.from_text(text=WELCOME_MESSAGE)], role="model")]
 
 # Get the absolute path to the project root
 project_root = os.path.dirname(os.path.abspath(__file__))
@@ -53,18 +53,21 @@ async def read_root(request: Request) -> HTMLResponse:
 
 @app.post("/chat")
 async def chat(request: Request, message: str = Form(...)) -> HTMLResponse:
-    # Get response from Gemini using prepared messages
+    # Get response from Gemini using chat history
+    chat_history.append(types.Content(role="user", parts=[types.Part(text=message)]))
     bot_response = await get_response(
         messages=chat_history,
         system_prompt=SYSTEM_PROMPT,
-    )[0]["text"]
+    )
 
     # Render Markdown to HTML (with safety features)
-    bot_response_html = markdown2.markdown(bot_response, safe_mode="escape")
+    if type(bot_response) == dict:
+        bot_response_html = f"<p><strong>Error:</strong> {bot_response['error']}</p>"
+    else:
+        bot_response_html = markdown2.markdown(bot_response[0].text, safe_mode="escape", extras=['fenced-code-blocks', 'code-friendly'])
 
-    # Add user message and bot response to chat history
-    chat_history.append(types.Content(role="user", parts=types.Part(text=message)))
-    chat_history.append(types.Content(role="model", parts=[bot_response]))
+    # Add bot response to chat history
+    chat_history.append(types.Content(role="model", parts=bot_response))
 
     message_id = str(uuid.uuid4())
 

@@ -1,5 +1,6 @@
 google-genai
 fastapi
+python-multipart
 python-dotenv
 uvicorn
 markdown2
