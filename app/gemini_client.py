@@ -16,7 +16,7 @@ async def get_response(
     messages: List[types.Content],
     system_prompt: str = "You are a helpful assistant that always answers questions.",
     model: str = GEMINI_DEFAULT_MODEL,
-) -> List[types.Part] | dict[Literal["error"], str]:
+) -> List[types.Part]:
     """
     Asynchronous function to get a chat response from OpenAI's ChatGPT, considering chat history.
 

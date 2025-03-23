@@ -42,6 +42,8 @@ project_root = os.path.dirname(os.path.abspath(__file__))
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request) -> HTMLResponse:
+    global chat_history
+    chat_history = [types.Content(parts=[types.Part.from_text(text=WELCOME_MESSAGE)], role="model")]
     return templates.TemplateResponse(
         "chat.html",
         {
@@ -64,7 +66,7 @@ async def chat(request: Request, message: str = Form(...)) -> HTMLResponse:
     if type(bot_response) == dict:
         bot_response_html = f"<p><strong>Error:</strong> {bot_response['error']}</p>"
     else:
-        bot_response_html = markdown2.markdown(bot_response[0].text, safe_mode="escape", extras=['fenced-code-blocks', 'code-friendly'])
+        bot_response_html = markdown2.markdown(bot_response[0].text, safe_mode="escape", extras=['fenced-code-blocks', 'code-friendly', 'tables'])
 
     # Add bot response to chat history
     chat_history.append(types.Content(role="model", parts=bot_response))
@@ -84,12 +86,13 @@ async def chat(request: Request, message: str = Form(...)) -> HTMLResponse:
 
 
 @app.get("/api/chat_history")
-async def get_chat_history() -> List[Dict[str, str]]:
-    return [message.model_dump() for message in chat_history]
+async def get_chat_history() -> List[Dict[str, object]]:
+    return [message.to_json_dict() for message in chat_history]
 
 
 # Optional: Add a route to clear chat history (for testing/demo purposes)
 @app.get("/api/clear_history")
 async def clear_history() -> Dict[str, str]:
-    chat_history.clear()
+    global chat_history
+    chat_history = [types.Content(parts=[types.Part.from_text(text=WELCOME_MESSAGE)], role="model")]
     return {"message": "Chat history cleared"}

@@ -4,7 +4,7 @@ document.body.addEventListener('htmx:beforeRequest', function(event) {
     
     var userMessage = document.createElement('div');
     userMessage.className = 'message user-message';
-    userMessage.innerHTML = `<p>${message}</p>`;
+    userMessage.innerHTML = `<p>${DOMPurify.sanitize(message)}</p>`;
     chatContainer.appendChild(userMessage);
     
     userMessage.offsetHeight;
@@ -36,7 +36,9 @@ function scrollToLastMessage() {
     const chatContainer = document.getElementById('chat-container');
     const lastMessage = chatContainer.lastElementChild;
     if (lastMessage) {
-        lastMessage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setTimeout(() => {
+            lastMessage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
     }
 }
 
