@@ -28,4 +28,4 @@ args = "pip install -r app/requirements.txt"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python app/main.py"
+args = "uvicorn app.main:app --reload"
