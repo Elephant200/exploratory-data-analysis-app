@@ -19,6 +19,8 @@ client = genai.Client()
 async def get_response(
     messages: List[types.Content],
     system_prompt: str = "You are a helpful assistant that always answers questions.",
+    dataset: types.File = None,
+    *,
     model: str = GEMINI_DEFAULT_MODEL,
 ) -> List[types.Part]:
     """
@@ -33,8 +35,12 @@ async def get_response(
         list: A list of Part objects containing the response
     """
     try:
-        logger.debug("Messages sent to Gemini API:")
-        logger.debug(messages)
+        logger.info("Messages sent to Gemini API:")
+        logger.info(messages)
+
+        contents = messages
+        if dataset:
+            contents.append(dataset)
 
         response = await client.aio.models.generate_content(
             model=model,
@@ -45,7 +51,7 @@ async def get_response(
             )
         )
         
-        logger.debug(response.to_json_dict())
+        logger.info(response.to_json_dict())
         return response.candidates[0].content.parts
     except Exception as e:
         logger.error(f"Gemini API error: {str(e)}")

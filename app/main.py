@@ -30,7 +30,7 @@ You perform exploratory analysis based on data the user can upload.
 Please perform analysis as soon as the user uploads a file. You may use your own judgment to determine the best way to analyze the data. This should be an AI-driven analysis; make your own research questions and answer them. Include at least one visualization.
 """
 
-uploaded_data = None
+uploaded_file = None
 
 app = FastAPI()
 
@@ -68,9 +68,16 @@ async def chat(request: Request) -> HTMLResponse:
 async def get_chat_response(request: Request, message: str = Form(...)) -> HTMLResponse:
     # Get response from Gemini using chat history
     chat_history.append(types.Content(role="user", parts=[types.Part(text=message)]))
+
+    # Print the chat history for debugging
+    print("Chat History before Gemini API call:")
+    for item in chat_history:
+        print(item.to_json_dict())
+
     bot_response = await get_response(
         messages=chat_history,
         system_prompt=SYSTEM_PROMPT,
+        dataset=uploaded_file
     )
 
     # Render Markdown to HTML (with safety features)
@@ -101,14 +108,17 @@ async def upload_file(request: Request, file: UploadFile = File(...)) -> Dict[st
     try: 
         #contents = await file.read()
         uploaded_file = upload_file_to_gemini(file.file)
-        chat_history.append(types.Content(role="user", parts=[types.Part(text=f"Uploaded file {file.filename}")]))
-        print(file.content_type)
-        print(file)
+        chat_history.append(types.Content(role="user", parts=[types.Part(text=f"File uploaded: {file.filename}")]))
 
-        chat_history.append(uploaded_file)
+        # Print the chat history after file upload
+        print("Chat History after file upload:")
+        for item in chat_history:
+            print(item.to_json_dict())
+    
         bot_response = await get_response(
             messages=chat_history,
             system_prompt=SYSTEM_PROMPT,
+            dataset=uploaded_file
         )
 
         bot_response_html = render_html_response(bot_response)

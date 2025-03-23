@@ -1,5 +1,4 @@
-document.body.addEventListener('htmx:beforeRequest', function(event) {
-    var message = document.getElementById('message-input').value;
+function add_user_message(message) {
     var chatContainer = document.getElementById('chat-container');
     
     var userMessage = document.createElement('div');
@@ -10,6 +9,12 @@ document.body.addEventListener('htmx:beforeRequest', function(event) {
     userMessage.offsetHeight;
     
     userMessage.classList.add('show');
+}
+
+document.querySelector("form[id='message-form']").addEventListener('htmx:beforeRequest', function(event) {
+    var message = document.getElementById('message-input').value;
+    
+    add_user_message(message);
     
     document.getElementById('message-input').value = '';
     
@@ -55,3 +60,17 @@ const observer = new MutationObserver((mutations) => {
 observer.observe(chatContainer, { childList: true });
 
 document.addEventListener('DOMContentLoaded', scrollToLastMessage);
+
+// Add event listener to the upload form
+document.querySelector("form[id='upload-form']").addEventListener('htmx:beforeRequest', function(event) {
+    
+    const filename = event.target.querySelector('input[type="file"]').files[0].name;
+
+    add_user_message("File uploaded: " + filename);
+
+    var typingIndicator = document.getElementById('typing-indicator').content.cloneNode(true);
+    chatContainer.appendChild(typingIndicator);
+
+    // Scroll to the last message
+    scrollToLastMessage();
+});
