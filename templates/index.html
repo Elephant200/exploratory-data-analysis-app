@@ -4,8 +4,43 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="mb-4 center">Welcome to the Exploratory Data Analysis App</h1>
-    <p>This app allows you to upload a dataset and perform exploratory data analysis on it. You can upload a dataset in CSV format and view the summary statistics, missing values, and correlation matrix of the dataset. All you have to do is chat with the bot and ask questions!</p>
-    <button class="btn btn-primary mt-3" onclick="window.location.href='/chat'">Start Analyzing</button>
+    <div class="text-center">
+        <h1 class="mb-4">Welcome to the Exploratory Data Analysis App</h1>
+        <p class="lead">
+            Unlock insights from your data with ease! Upload your dataset in CSV format and explore summary statistics, missing values, and correlation matrices. 
+            Simply chat with the bot and ask questions to get started.
+        </p>
+    </div>
+
+    <div class="text-center mt-5">
+        <button class="btn btn-primary btn-lg" onclick="window.location.href='/chat'">Start Analyzing</button>
+    </div>
+
+    <!-- Demo Image Section -->
+    <div class="text-center mt-4">
+        <img src="static/demo.png" alt="Demo of the App" class="img-fluid rounded shadow" style="max-width: 80%; height: auto;">
+        <p class="mt-3 text-muted">A quick preview of the Exploratory Data Analysis App in action.</p>
+    </div>
+
+    <!-- Call-to-Action Section -->
+    <div class="text-center mt-5">
+        <button class="btn btn-primary btn-lg" onclick="window.location.href='/chat'">Start Analyzing</button>
+    </div>
+
+    <!-- Features Section -->
+    <div class="mt-5">
+        <h2>Features</h2>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">📊 Upload datasets in CSV format for analysis.</li>
+            <li class="list-group-item">📈 View summary statistics and identify missing values.</li>
+            <li class="list-group-item">🔍 Explore correlation matrices to uncover relationships in your data.</li>
+            <li class="list-group-item">🤖 Chat with the bot to ask questions and get insights.</li>
+        </ul>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="mt-5 text-center text-muted">
+        <p>Built with ❤️ for data enthusiasts. Start exploring your data today!</p>
+    </footer>
 </div>
 {% endblock %}
