@@ -36,8 +36,8 @@ async def get_response(
         list: A list of Part objects containing the response
     """
     try:
-        logger.info("Messages sent to Gemini API:")
-        logger.info(messages)
+        logger.debug("Messages sent to Gemini API:")
+        logger.debug(messages)
 
         contents = messages
         if dataset:
@@ -52,7 +52,7 @@ async def get_response(
             )
         )
         
-        logger.info(response.to_json_dict())
+        logger.debug(response.to_json_dict())
         return response.candidates[0].content.parts
     except Exception as e:
         logger.error(f"Gemini API error: {str(e)}")
