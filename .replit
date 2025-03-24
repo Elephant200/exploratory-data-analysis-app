@@ -24,8 +24,8 @@ author = 3947996
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "pip install -r app/requirements.txt"
+args = "pip install -r requirements.txt"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "uvicorn app.main:app --reload"
+args = "uvicorn main:app --reload --host localhost"
