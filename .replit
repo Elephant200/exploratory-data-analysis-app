@@ -11,7 +11,7 @@ language = "python3"
 requiredFiles = [".replit", "replit.nix"]
 
 [deployment]
-run = ["python3", "app/main.py"]
+run = ["sh", "-c", "uvicorn main:app --host localhost --port 8000"]
 deploymentTarget = "cloudrun"
 
 [workflows]
