@@ -21,16 +21,10 @@ from gemini_client import get_response, upload_file_to_gemini
 load_dotenv()
 
 CHAT_TITLE = "Exploratory Data Analysis with Google Gemini"
-WELCOME_MESSAGE = "Welcome to the EDA chatbot! Ask me anything about data analysis."
-SYSTEM_PROMPT = """
-You are a helpful data analysis assistant. 
+WELCOME_MESSAGE = "Welcome to the EDA chatbot! Upload a file to get started, or ask me anything about data analysis!"
 
-You perform exploratory analysis based on data the user can upload.
-
-Please perform analysis as soon as the user uploads a file. You may use your own judgment to determine the best way to analyze the data. This should be an AI-driven analysis; make your own research questions and answer them. Include at least one visualization.
-
-Never rewrite the content of the entire dataset; you will run out of tokens. Instead, use the code "pd.read_csv("input_file_0.csv")" in code execution parts to load the dataset.
-"""
+with open("system_prompt.txt", "r") as f:
+    SYSTEM_PROMPT = f.read()
 
 uploaded_file = None
 
@@ -45,8 +39,7 @@ app.mount("/static", StaticFiles(directory=static_directory), name="static")
 
 # Simulating a database with an in-memory list
 chat_history: types.ContentListUnion = [
-    types.Content(parts=[types.Part.from_text(text=WELCOME_MESSAGE)],
-                  role="model")
+    types.Content(parts=[types.Part.from_text(text=WELCOME_MESSAGE)], role="model")
 ]
 
 # Get the absolute path to the project root
@@ -57,6 +50,9 @@ project_root = os.path.dirname(os.path.abspath(__file__))
 async def read_root(request: Request) -> HTMLResponse:
     return templates.TemplateResponse("index.html", {"request": request})
 
+@app.get("/about", response_class=HTMLResponse)
+async def about(request: Request) -> HTMLResponse:
+    return templates.TemplateResponse("about.html", {"request": request})
 
 @app.get("/chat", response_class=HTMLResponse)
 async def chat(request: Request) -> HTMLResponse:
