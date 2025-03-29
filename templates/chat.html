@@ -7,7 +7,7 @@
     <h1 class="mb-4">{{ chat_title }}</h1>
     <form class="mt-3" hx-post="/upload" hx-target="#chat-container" hx-swap="beforeend" enctype="multipart/form-data" id="upload-form">
         <div class="input-group">
-            <input type="file" name="file" class="form-control" accept=".csv" required>
+            <input type="file" name="file" class="form-control" accept=".csv" title="Max file size: 2 MB. Only CSV files are allowed." required>
             <button class="btn btn-secondary" type="submit">Upload Dataset</button>
         </div>
     </form>
@@ -38,5 +38,19 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 <script>
     hljs.highlightAll();
+</script>
+
+<script>
+    function validateFileSize() {
+        const fileInput = document.querySelector("input[name='file']");
+        const file = fileInput.files[0];
+        const maxSize = 2 * 1024 * 1024; // 2 MB in bytes
+
+        if (file && file.size > maxSize) {
+            alert('File size exceeds 2 MB. Please upload a smaller file.');
+            return false; // Prevent form submission
+        }
+        return true;
+    }
 </script>
 {% endblock %}
