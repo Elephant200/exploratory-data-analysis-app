@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}About | EDA Chatbot{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Hero Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold mb-4">About the EDA Chatbot</h1>
+        <p class="lead text-muted mb-4">
+            Your intelligent companion for data exploration and analysis
+        </p>
+    </div>
+
+    <!-- Main Description -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm bg-dark-subtle">
+                <div class="card-body">
+                    <p class="card-text">
+                        Welcome to the EDA Chatbot, your powerful tool for exploratory data analysis. This innovative chatbot leverages the cutting-edge capabilities of Google Gemini 2.0 Flash and code execution to transform your data into actionable insights. Simply upload your CSV file and start asking questions - it's that easy!
+                    </p>
+                    <p class="card-text">
+                        Whether you're a data scientist, business analyst, or student, our chatbot is designed to help you understand your data better through interactive analysis, visualizations, and natural language conversations.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Key Features</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 shadow-sm bg-dark-subtle">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-file-csv fa-3x text-primary"></i>
+                            </div>
+                            <h5 class="card-title">CSV Support</h5>
+                            <p class="card-text">Easily upload and analyze your CSV datasets with instant processing</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 shadow-sm bg-dark-subtle">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-chart-bar fa-3x text-primary"></i>
+                            </div>
+                            <h5 class="card-title">Smart Analysis</h5>
+                            <p class="card-text">Get comprehensive summary statistics and identify data patterns</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 shadow-sm bg-dark-subtle">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-chart-line fa-3x text-primary"></i>
+                            </div>
+                            <h5 class="card-title">Visualizations</h5>
+                            <p class="card-text">Generate insightful charts and correlation matrices automatically</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 shadow-sm bg-dark-subtle">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-robot fa-3x text-primary"></i>
+                            </div>
+                            <h5 class="card-title">AI-Powered</h5>
+                            <p class="card-text">Leverage Google Gemini 2.0 Flash for intelligent data analysis</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">How It Works</h2>
+            <div class="timeline">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm bg-dark-subtle">
+                            <div class="card-body text-center">
+                                <div class="step-number mb-3">1</div>
+                                <h5 class="card-title">Upload Your Data</h5>
+                                <p class="card-text">Start by uploading your CSV file through our simple interface</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm bg-dark-subtle">
+                            <div class="card-body text-center">
+                                <div class="step-number mb-3">2</div>
+                                <h5 class="card-title">Ask Questions</h5>
+                                <p class="card-text">Interact with the chatbot using natural language</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm bg-dark-subtle">
+                            <div class="card-body text-center">
+                                <div class="step-number mb-3">3</div>
+                                <h5 class="card-title">Get Insights</h5>
+                                <p class="card-text">Receive detailed analysis and visualizations</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Demo Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">See It In Action</h2>
+            <div class="card shadow bg-dark-subtle">
+                <div class="card-body">
+                    <div class="text-center">
+                        <video src="static/demo-vid.mp4" class="img-fluid rounded" style="max-width: 80%; height: auto;" controls></video>
+                        <div class="mt-4">
+                            <a href="/chat" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-play me-2"></i>Start Analyzing Your Data
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Open Source Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card bg-dark">
+                <div class="card-body text-center">
+                    <h3 class="card-title">Open Source Project</h3>
+                    <p class="card-text">
+                        This project is open source and available on GitHub. Feel free to contribute, report issues, or suggest improvements!
+                    </p>
+                    <a href="https://github.com/Elephant200/exploratory-data-analysis-app" class="btn btn-outline-light">
+                        <i class="fab fa-github me-2"></i>View on GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .feature-icon {
+        color: #0d6efd;
+    }
+    .step-number {
+        width: 40px;
+        height: 40px;
+        background-color: #0d6efd;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        font-weight: bold;
+    }
+    .timeline {
+        position: relative;
+    }
+    .timeline::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 2px;
+        height: 100%;
+        background: var(--bs-border-color);
+        transform: translateX(-50%);
+    }
+    .card {
+        transition: transform 0.2s;
+        border: 1px solid var(--bs-border-color);
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .card-title {
+        color: var(--bs-body-color);
+    }
+    .card-text {
+        color: var(--bs-body-color);
+    }
+</style>
+{% endblock %}
+
