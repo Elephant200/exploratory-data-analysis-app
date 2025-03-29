@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Exploratory Data Analysis App{% endblock %}
+{% block title %}Home | EDA Chatbot{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
@@ -13,7 +13,7 @@
     </div>
 
     <div class="text-center mt-5">
-        <a class="btn btn-primary btn-lg" href="/chat">Start Analyzing</button>
+        <a class="btn btn-primary btn-lg" href="/chat">Start Analyzing</a>
     </div>
 
     <!-- Demo Image Section -->
@@ -24,25 +24,7 @@
 
     <!-- Call-to-Action Section -->
     <div class="text-center mt-5">
-        <button class="btn btn-primary btn-lg" onclick="window.location.href='/chat'">Start Analyzing</button>
+        <button class="btn btn-primary btn-lg" onclick="window.location.href='/about'">More Info</button>
     </div>
-
-    <!-- Features Section -->
-    <div class="mt-5">
-        <h2>Features</h2>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">📊 Upload datasets in CSV format for analysis.</li>
-            <li class="list-group-item">📈 View summary statistics and identify missing values.</li>
-            <li class="list-group-item">🔍 Explore correlation matrices to uncover relationships in your data.</li>
-            <li class="list-group-item">🤖 Chat with the bot to ask questions and get insights.</li>
-        </ul>
-    </div>
-
-    <!-- Footer Section -->
-    <footer class="mt-5 text-center text-muted">
-        <p class="copyright">Powered by <a class="link-footer"
-            href="https://elephantonian.replit.app">Elephantonian</a>
-        <p>
-    </footer>
 </div>
 {% endblock %}
