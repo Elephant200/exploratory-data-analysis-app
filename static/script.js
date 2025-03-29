@@ -62,7 +62,23 @@ observer.observe(chatContainer, { childList: true });
 document.addEventListener('DOMContentLoaded', scrollToLastMessage);
 
 // Add event listener to the upload form
+function validateFileSize() {
+    const fileInput = document.querySelector("input[name='file']");
+    const file = fileInput.files[0];
+    const maxSize = 2 * 1024 * 1024; // 2 MB in bytes
+
+    if (file && file.size > maxSize) {
+        alert('File size exceeds 2 MB. Please upload a smaller file.');
+        return false; // Prevent form submission
+    }
+    return true;
+}
+
 document.querySelector("form[id='upload-form']").addEventListener('htmx:beforeRequest', function(event) {
+    if (!validateFileSize()) {
+        event.preventDefault();
+        return;
+    }
     
     const filename = event.target.querySelector('input[type="file"]').files[0].name;
 
