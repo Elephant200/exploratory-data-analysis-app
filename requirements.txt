@@ -1,6 +1,5 @@
 google-genai
-fastapi
-python-multipart
+fastapi[all]
 python-dotenv
 uvicorn
 markdown2
