@@ -16,7 +16,7 @@ import markdown2
 from typing import List, Dict
 import uuid
 
-from gemini_client import get_response, upload_file_to_gemini
+from .gemini_client import get_response, upload_file_to_gemini
 
 load_dotenv()
 
