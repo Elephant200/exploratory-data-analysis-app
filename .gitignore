@@ -173,5 +173,10 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-
+# Mac
 .DS_Store
+
+# Replit
+.replit
+pyproject.toml
+uv.lock
