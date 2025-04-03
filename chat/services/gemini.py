@@ -14,10 +14,10 @@ TOOLS = [
     {"code_execution": {}}
 ]
 
-# Configure OpenAI client
+# Configure Gemini client
 client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
-async def get_response(
+def get_response(
     messages: List[types.Content],
     system_prompt: str = "You are a helpful assistant that always answers questions.",
     dataset: types.File = None,
@@ -25,7 +25,7 @@ async def get_response(
     model: str = GEMINI_DEFAULT_MODEL,
 ) -> List[types.Part]:
     """
-    Asynchronous function to get a chat response from OpenAI's ChatGPT, considering chat history.
+    Function to get a chat response from Gemini, considering chat history.
 
     Args:
         messages (ContentListUnion): List of previous messages, each a Content object with role and parts
@@ -38,20 +38,16 @@ async def get_response(
     try:
         logger.debug("Messages sent to Gemini API:")
         logger.debug(messages)
-
-        contents = messages
-        if dataset:
-            contents.append(dataset)
-
-        response = await client.aio.models.generate_content(
+        print([str(x)[:100] for x in messages])
+        response = client.models.generate_content(
             model=model,
-            contents=messages,
+            contents=(messages + ([dataset] if dataset is not None else [])),
             config=types.GenerateContentConfig(
                 system_instruction=system_prompt,
                 tools=TOOLS
             )
         )
-        
+        print([str(x)[:100] for x in messages])
         logger.debug(response.to_json_dict())
         return response.candidates[0].content.parts
     except Exception as e:
@@ -63,4 +59,4 @@ def upload_file_to_gemini(file) -> types.File:
     """
     Upload a file to Google Gemini.
     """
-    return client.files.upload(file=file, config=types.UploadFileConfig(mime_type="text/csv"))
+    return client.files.upload(file=file, config=types.UploadFileConfig(mime_type="text/csv")) 
