@@ -3,7 +3,7 @@ import markdown2
 from typing import Dict, List
 from google.genai import types
 
-def render_html_response(bot_response: Dict[str, str] | List[types.Part]) -> str:
+def render_html_response(bot_response: Dict[str, str] | List[types.Part], uploaded_file_name: str | None = None) -> str:
     """
     Render bot response to HTML with proper formatting.
     
@@ -23,7 +23,10 @@ def render_html_response(bot_response: Dict[str, str] | List[types.Part]) -> str
                 part.text,
                 extras=['fenced-code-blocks', 'code-friendly', 'tables'])
         elif part.executable_code:
-            bot_response_html += f"<br/>Python Code:<pre><code>{part.executable_code.code}</code></pre><br/>"
+            if uploaded_file_name:
+                bot_response_html += f"<br/>Python Code:<pre><code>{part.executable_code.code.replace('input_file_0.csv', uploaded_file_name)}</code></pre><br/>"
+            else:
+                bot_response_html += f"<br/>Python Code:<pre><code>{part.executable_code.code}</code></pre><br/>"
         elif part.code_execution_result:
             bot_response_html += f"<br/>Code Output:<pre><code>{part.code_execution_result.output}</code></pre><br/>"
         elif part.inline_data:
