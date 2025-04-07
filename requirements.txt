@@ -4,3 +4,4 @@ python-dotenv
 markdown2
 pandas
 pygments
+latex2mathml
