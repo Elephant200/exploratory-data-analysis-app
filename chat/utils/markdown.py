@@ -3,6 +3,14 @@ import markdown2
 from typing import Dict, List
 from google.genai import types
 
+def replace_input_file_name(text: str, uploaded_file_name: str | None) -> str:
+    if uploaded_file_name:
+        return text.replace('input_file_0.csv', uploaded_file_name)
+    return text
+
+def highlight_code(code: str) -> str:
+    return markdown2.markdown("```python\n" + code + "\n```", extras=['fenced-code-blocks', 'code-friendly'])
+
 def render_html_response(bot_response: Dict[str, str] | List[types.Part], uploaded_file_name: str | None = None) -> str:
     """
     Render bot response to HTML with proper formatting.
@@ -15,20 +23,23 @@ def render_html_response(bot_response: Dict[str, str] | List[types.Part], upload
     """
     if type(bot_response) == dict:
         return f"<p><strong>Error:</strong> {bot_response['error']}</p>"
-    
+
+    if type(bot_response) != list:
+        return f"<p><strong>Error:</strong> Unparsable response type {type(bot_response)}</p>"
+
     bot_response_html = ""
+    
     for part in bot_response:
         if part.text:
             bot_response_html += markdown2.markdown(
                 part.text,
-                extras=['fenced-code-blocks', 'code-friendly', 'tables'])
+                extras=['fenced-code-blocks', 'code-friendly', 'tables', "latex"]
+            )
+
         elif part.executable_code:
-            if uploaded_file_name:
-                bot_response_html += f"<br/>Python Code:<pre><code>{part.executable_code.code.replace('input_file_0.csv', uploaded_file_name)}</code></pre><br/>"
-            else:
-                bot_response_html += f"<br/>Python Code:<pre><code>{part.executable_code.code}</code></pre><br/>"
+            bot_response_html += f"<br/>Python Code:{highlight_code(replace_input_file_name(part.executable_code.code, uploaded_file_name))}<br/>"
         elif part.code_execution_result:
-            bot_response_html += f"<br/>Code Output:<pre><code>{part.code_execution_result.output}</code></pre><br/>"
+            bot_response_html += f"<br/>Code Output:<pre>{replace_input_file_name(part.code_execution_result.output, uploaded_file_name)}</pre><br/>"
         elif part.inline_data:
             try:
                 base64_data = base64.b64encode(
