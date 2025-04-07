@@ -1,3 +1,4 @@
+/* Root variables */
 :root {
     --user-message-bg: #0056b3;
     --bot-message-bg: #2c2c2c;
@@ -6,28 +7,72 @@
     --input-text: #ffffff;
 }
 
+/* Base styles */
 body {
     background-color: #1a1a1a;
     color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
+main {
+    flex: 1;
+}
+
+/* Navigation */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+}
+
+.navbar-text {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.nav-link {
+    font-size: 1.1rem;
+    padding: 0.5rem 1rem;
+    transition: color 0.2s ease-in-out;
+}
+
+.nav-link:hover {
+    color: var(--bs-primary) !important;
+}
+
+.nav-link.active {
+    color: var(--bs-primary) !important;
+    font-weight: 500;
+}
+
+/* Footer */
+.footer {
+    margin-top: auto;
+}
+
+/* Code blocks */
 code {
-    background-color: #111111; /* Distinct background color for code blocks */
-    color: #ffffff; /* Light text color for better contrast */
+    background-color: #111111;
+    color: #ffffff;
 }
 
 pre {
-    background-color: #111111; /* Distinct background color for code blocks */
-    color: #ffffff; /* Light text color for better contrast */
+    background-color: #111111;
+    color: #ffffff;
     padding: 10px;
     border-radius: 5px;
     font-family: "Courier New", Courier, monospace;
-    display: block; /* Ensure code blocks take up their own line */
-    overflow-x: auto; /* Add horizontal scrolling for long code lines */
-    max-width: 100%; /* Prevent code blocks from exceeding container width */
-    white-space: pre-wrap; /* Wrap long lines */
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
+    white-space: pre-wrap;
 }
 
+/* Chat container */
 .chat-container {
     height: 60vh;
     overflow-y: auto;
@@ -37,6 +82,7 @@ pre {
     border: 1px solid #3a3a3a;
 }
 
+/* Messages */
 .message {
     margin-bottom: 15px;
     padding: 10px;
@@ -62,14 +108,8 @@ pre {
     background-color: var(--bot-message-bg);
     color: var(--text-color);
     align-self: flex-start;
-}
-
-.bot-message {
-    background-color: var(--bot-message-bg);
-    color: var(--text-color);
-    align-self: flex-start;
-    width: 100%; /* Ensure all bot messages have the same width */
-    max-width: 80%; /* Limit the width of bot messages */
+    width: 100%;
+    max-width: 80%;
     padding: 15px;
     box-sizing: border-box; /* Include padding in width calculation */
     word-wrap: break-word; /* Break long words to prevent overflow */
@@ -82,6 +122,7 @@ pre {
     box-sizing: border-box;
 }
 
+/* Typing indicator */
 .typing-indicator {
     display: flex;
     align-items: center;
@@ -106,18 +147,15 @@ pre {
 }
 
 @keyframes bounce {
-
-    0%,
-    60%,
-    100% {
+    0%, 60%, 100% {
         transform: translateY(0);
     }
-
     30% {
         transform: translateY(-10px);
     }
 }
 
+/* Sources toggle */
 .sources-toggle .bi {
     transition: transform 0.2s ease-in-out;
 }
@@ -130,7 +168,7 @@ pre {
     content: "Hide Sources";
 }
 
-/* Form input styling */
+/* Form elements */
 .form-control {
     background-color: var(--input-bg);
     color: var(--input-text);
@@ -144,7 +182,7 @@ pre {
     box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
 }
 
-/* Button styling */
+/* Buttons */
 .btn-primary {
     background-color: var(--user-message-bg);
     border-color: var(--user-message-bg);
@@ -156,7 +194,6 @@ pre {
     border-color: #005cbf;
 }
 
-/* Sources toggle button */
 .btn-outline-secondary {
     color: #b0b0b0;
     border-color: #b0b0b0;
@@ -169,6 +206,7 @@ pre {
     border-color: #b0b0b0;
 }
 
+/* Citations */
 .citation-source-icon {
     margin-right: 10px;
     cursor: pointer;
@@ -185,7 +223,7 @@ pre {
     word-break: break-word;
 }
 
-/* Table styling */
+/* Tables */
 table {
     width: 100%;
     border-collapse: collapse;
