@@ -37,11 +37,13 @@ def about(request: HttpRequest) -> HttpResponse:
 
 # ======================================= Chat views =======================================
 def chat(request: HttpRequest) -> HttpResponse:
-    global chat_history
+    global chat_history, uploaded_file, uploaded_file_name
     chat_history = [
         types.Content(parts=[types.Part.from_text(text=WELCOME_MESSAGE)],
                       role="model")
     ]
+    uploaded_file = None
+    uploaded_file_name = None
     return render(request, 'chat/chat.html', {
         'chat_title': CHAT_TITLE,
         'welcome_message': WELCOME_MESSAGE,
