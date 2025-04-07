@@ -2,6 +2,10 @@
 
 {% block title %}Analysis | EDA Chatbot{% endblock %}
 
+{% block head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css">
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <form class="mb-3" hx-post="/api/chat/upload/" hx-target="#chat-container" hx-swap="beforeend" enctype="multipart/form-data" id="upload-form">
@@ -35,7 +39,7 @@
     </div>
 </template>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
 <script>
     hljs.highlightAll();
 </script>
