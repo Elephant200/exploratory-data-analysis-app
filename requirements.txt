@@ -3,3 +3,4 @@ django
 python-dotenv
 markdown2
 pandas
+pygments
