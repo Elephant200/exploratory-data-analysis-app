@@ -254,3 +254,9 @@ tr:nth-child(even) td {
 tr:hover td {
     background-color: #3a3a3a;
 }
+
+/* Math */
+math[display="block"] {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
