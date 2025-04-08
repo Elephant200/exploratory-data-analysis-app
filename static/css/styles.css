@@ -5,6 +5,8 @@
     --text-color: #e0e0e0;
     --input-bg: #333333;
     --input-text: #ffffff;
+    --header-height: 56px; /* Bootstrap navbar default height */
+    --footer-height: 60px; /* Approximate footer height */
 }
 
 /* Base styles */
@@ -18,6 +20,10 @@ body {
 
 main {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    height: calc(100vh - var(--header-height) - var(--footer-height));
 }
 
 /* Navigation */
@@ -74,12 +80,14 @@ pre {
 
 /* Chat container */
 .chat-container {
-    height: 60vh;
+    flex: 1;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     background-color: #242424;
     border: 1px solid #3a3a3a;
+    margin-bottom: 1rem;
+    min-height: 0; /* Important for flex child */
 }
 
 /* Messages */
@@ -259,4 +267,16 @@ tr:hover td {
 math[display="block"] {
     padding-top: 1rem;
     padding-bottom: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    main {
+        padding: 0.5rem;
+        height: calc(100vh - var(--header-height) - var(--footer-height) - 1rem);
+    }
+    
+    .message {
+        max-width: 90%;
+    }
 }
