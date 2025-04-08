@@ -178,5 +178,6 @@ cython_debug/
 
 # Replit
 .replit
+replit.nix
 pyproject.toml
 uv.lock
