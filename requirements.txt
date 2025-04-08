@@ -1,6 +1,7 @@
 google-genai
-fastapi[all]
+django
 python-dotenv
-uvicorn
 markdown2
 pandas
+pygments
+latex2mathml

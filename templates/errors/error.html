@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}{{ status_code }} - {{ status_text }} | EDA Chatbot{% endblock %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <h1 class="display-1">{{ status_code }}</h1>
+    <h2 class="mb-4">{{ status_text }}</h2>
+    <p class="lead">{{ error_message }}</p>
+    {% if detail %}
+        <details class="mb-3">
+            <summary class="lead">Advanced Error Details</summary>
+            <p class="lead">{{ detail }}</p>
+        </details>
+    {% endif %}
+    <a href="{% url 'index' %}" class="btn btn-primary">Return to Home</a>
+</div>
+{% endblock %} 
