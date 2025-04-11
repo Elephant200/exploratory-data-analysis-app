@@ -66,17 +66,4 @@
 </template>
 
 <script src="/static/js/chat_messages.js"></script>
-<script>
-    function validateFileSize() {
-        const fileInput = document.querySelector("input[name='file']");
-        const file = fileInput.files[0];
-        const maxSize = 2 * 1024 * 1024; // 2 MB in bytes
-
-        if (file && file.size > maxSize) {
-            alert("File size exceeds 2 MB. Please upload a smaller file.");
-            return false; // Prevent form submission
-        }
-        return true;
-    }
-</script>
 {% endblock %}
