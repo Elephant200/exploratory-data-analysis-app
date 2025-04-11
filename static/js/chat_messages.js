@@ -61,15 +61,14 @@ observer.observe(chatContainer, { childList: true });
 
 document.addEventListener('DOMContentLoaded', scrollToLastMessage);
 
-// Add event listener to the upload form
 function validateFileSize() {
     const fileInput = document.querySelector("input[name='file']");
     const file = fileInput.files[0];
-    const maxSize = 2 * 1024 * 1024; // 2 MB in bytes
+    const maxSize = 2 * 1024 * 1024; // 2 MB
 
     if (file && file.size > maxSize) {
         alert('File size exceeds 2 MB. Please upload a smaller file.');
-        return false; // Prevent form submission
+        return false;
     }
     return true;
 }
