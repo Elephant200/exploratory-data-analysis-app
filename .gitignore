@@ -181,3 +181,4 @@ cython_debug/
 replit.nix
 pyproject.toml
 uv.lock
+generated-icon.png
