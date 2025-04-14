@@ -3,6 +3,10 @@
 
 {% block title %}About | EDA Chatbot{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/about.css' %}" />
+{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
     <!-- Hero Section -->
@@ -128,12 +132,12 @@
                 <div class="card-body">
                     <div class="text-center">
                         <video 
-                            src="/static/assets/demo-vid.mp4" 
+                            src="{% static 'assets/demo-vid.mp4' %}" 
                             class="img-fluid rounded" 
                             style="max-width: 80%; height: auto;" 
                             controls
                             preload="metadata"
-                            poster="/static/assets/demo-loading-placeholder.png"
+                            poster="{% static 'assets/demo-loading-placeholder.png' %}"
                         ></video>
                         <div class="mt-4">
                             <a href="/chat" class="btn btn-primary btn-lg px-5">
@@ -164,29 +168,8 @@
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const video = document.querySelector('video');
-    const loadingSpinner = document.querySelector('.video-loading');
-    
-    if (video && loadingSpinner) {
-        // Show loading spinner when video starts loading
-        video.addEventListener('loadstart', function() {
-            loadingSpinner.style.display = 'block';
-        });
-        
-        // Hide loading spinner when video can play
-        video.addEventListener('canplay', function() {
-            loadingSpinner.style.display = 'none';
-        });
-        
-        // Handle video errors
-        video.addEventListener('error', function() {
-            loadingSpinner.style.display = 'none';
-            console.error('Error loading video:', video.error);
-        });
-    }
-});
-</script>
 {% endblock %}
 
+{% block extra_scripts %}
+<script src="{% static 'js/video_loading.js' %}"></script>
+{% endblock %}
