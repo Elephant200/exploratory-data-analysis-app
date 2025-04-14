@@ -5,3 +5,4 @@ markdown2
 pandas
 pygments
 latex2mathml
+gunicorn
