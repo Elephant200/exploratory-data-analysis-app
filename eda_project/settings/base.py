@@ -46,6 +46,8 @@ TEMPLATES = [
     },
 ]
 
+X_FRAME_OPTIONS = '*'
+
 WSGI_APPLICATION = 'eda_project.wsgi.application'
 
 DATABASES = {
