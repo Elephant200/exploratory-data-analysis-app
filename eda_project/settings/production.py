@@ -1,3 +1,5 @@
+from .base import *
+
 DEBUG = False
 
 ALLOWED_HOSTS = ["exploratory-data-analysis.replit.app"]
