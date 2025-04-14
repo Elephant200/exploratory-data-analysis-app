@@ -1,6 +1,9 @@
-{% extends "base.html" %} {% block title %}Analysis | EDA Chatbot{% endblock %}
-{% block head %}
-<link rel="stylesheet" href="/static/css/pygments.css" />
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Analysis | EDA Chatbot{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/pygments.css'}" />
 {% endblock %} {% block content %}
 <div class="container">
     <form
@@ -64,6 +67,8 @@
         <div class="dot"></div>
     </div>
 </template>
+{% endblock %}
 
+{% block extra_scripts %}
 <script src="/static/js/chat_messages.js"></script>
 {% endblock %}
