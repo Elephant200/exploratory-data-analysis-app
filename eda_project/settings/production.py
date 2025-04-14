@@ -1,4 +1,4 @@
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["eda-app.replit.app"]
 
