@@ -8,4 +8,4 @@ A web application that performs exploratory data analysis on CSV files using Goo
 - 📈 Automatic visualization generation
 - 🔍 Smart data analysis and insights
 
-This website is currently hosted at https://eda-app.replit.app
+This website is currently hosted at https://exploratory-data-analysis.replit.app
