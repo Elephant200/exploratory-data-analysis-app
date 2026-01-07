@@ -1,15 +1,12 @@
 import logging
 import os
-from typing import List, Dict
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse, HttpRequest
 from django.views.decorators.http import require_http_methods
-from google.genai import types
 
-from .services.gemini import get_response, upload_file_to_gemini
+from .services.gemini import GeminiChatSession
 from .utils.markdown import render_html_response
 
-# Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -19,35 +16,33 @@ WELCOME_MESSAGE = "Welcome to the EDA chatbot! Upload a file to get started, or 
 with open("system_prompt.txt", "r") as f:
     SYSTEM_PROMPT = f.read()
 
-# Simulating a database with an in-memory list
-chat_history: types.ContentListUnion = [
-    types.Content(parts=[types.Part.from_text(text=WELCOME_MESSAGE)], role="model")
-]
-
-uploaded_file: types.File | None = None
-uploaded_file_name: str | None = None
+chat_session: GeminiChatSession | None = None
 
 
-# ======================================= Page views =======================================
+def _get_or_create_session() -> GeminiChatSession:
+    """Get the current chat session or create a new one."""
+    global chat_session
+    if chat_session is None:
+        chat_session = GeminiChatSession(system_prompt=SYSTEM_PROMPT)
+    return chat_session
+
+
 def index(request: HttpRequest) -> HttpResponse:
     return render(request, 'pages/index.html')
+
 
 def about(request: HttpRequest) -> HttpResponse:
     return render(request, 'pages/about.html')
 
-# ======================================= Chat views =======================================
+
 def chat(request: HttpRequest) -> HttpResponse:
-    global chat_history, uploaded_file, uploaded_file_name
-    chat_history = [
-        types.Content(parts=[types.Part.from_text(text=WELCOME_MESSAGE)],
-                      role="model")
-    ]
-    uploaded_file = None
-    uploaded_file_name = None
+    global chat_session
+    chat_session = GeminiChatSession(system_prompt=SYSTEM_PROMPT)
     return render(request, 'chat/chat.html', {
         'chat_title': CHAT_TITLE,
         'welcome_message': WELCOME_MESSAGE,
     })
+
 
 @require_http_methods(["POST"])
 def get_chat_response(request: HttpRequest) -> HttpResponse:
@@ -55,61 +50,34 @@ def get_chat_response(request: HttpRequest) -> HttpResponse:
     if not message:
         return HttpResponse("No message provided", status=400)
 
-    global chat_history
-    chat_history.append(
-        types.Content(role="user", parts=[types.Part(text=message)])
-    )
-
-    # Print the chat history for debugging
-    print("Chat History before Gemini API call:")
-    for item in chat_history:
-        print(item.to_json_dict())
-
-    bot_response = get_response(messages=chat_history,
-                              system_prompt=SYSTEM_PROMPT,
-                              dataset=uploaded_file)
+    session = _get_or_create_session()
     
-
-    # Render Markdown to HTML (with safety features)
-    bot_response_html = render_html_response(bot_response, uploaded_file_name)
-
-    # Add bot response to chat history
-    chat_history.append(types.Content(role="model", parts=bot_response))
+    logger.debug(f"User message: {message}")
+    bot_response = session.send_message(message)
+    bot_response_html = render_html_response(bot_response, session.uploaded_file_name)
 
     return render(request, 'chat/bot_message.html', {
         'bot_response_html': bot_response_html,
     })
 
+
 @require_http_methods(["POST"])
 def upload_file(request: HttpRequest) -> HttpResponse:
-    global chat_history, uploaded_file
     try:
         file = request.FILES.get('file')
         if not file:
             return HttpResponse("No file provided", status=400)
 
-        uploaded_file_name = file.name
-        uploaded_file = upload_file_to_gemini(file.file)
-        chat_history.append(
-            types.Content(
-                role="user",
-                parts=[types.Part(text=f"File uploaded: {uploaded_file_name}")]
-            )
-        )
-
-        # Print the chat history after file upload
-        print("Chat History after file upload:")
-        for item in chat_history:
-            print(item.to_json_dict())
-
-        bot_response = get_response(messages=chat_history,
-                                  system_prompt=SYSTEM_PROMPT,
-                                  dataset=uploaded_file)
+        session = _get_or_create_session()
         
-        bot_response_html = render_html_response(bot_response, uploaded_file_name)
-
-        # Add bot response to chat history
-        chat_history.append(types.Content(role="model", parts=bot_response))
+        uploaded_file = session.upload_file(file.file, file.name)
+        
+        bot_response = session.send_message_with_file(
+            f"File uploaded: {file.name}. Please analyze this dataset.",
+            uploaded_file
+        )
+        
+        bot_response_html = render_html_response(bot_response, session.uploaded_file_name)
 
         return render(request, 'chat/bot_message.html', {
             'bot_response_html': bot_response_html,
@@ -120,27 +88,22 @@ def upload_file(request: HttpRequest) -> HttpResponse:
             'bot_response_html': f"<p><strong>Error:</strong> {str(e)}</p>",
         })
 
+
 @require_http_methods(["GET"])
 def get_chat_history(request: HttpRequest) -> JsonResponse:
-    return JsonResponse([message.to_json_dict() for message in chat_history], safe=False)
+    session = _get_or_create_session()
+    history = session.get_history()
+    return JsonResponse([msg.to_json_dict() for msg in history], safe=False)
+
 
 @require_http_methods(["GET"])
 def clear_history(request: HttpRequest) -> JsonResponse:
-    global chat_history
-    chat_history = [
-        types.Content(parts=[types.Part.from_text(text=WELCOME_MESSAGE)],
-                      role="model")
-    ]
+    global chat_session
+    chat_session = GeminiChatSession(system_prompt=SYSTEM_PROMPT)
     return JsonResponse({"message": "Chat history cleared"})
 
 
-
-# ======================================= Error handlers =======================================
 def handle_error(request: HttpRequest, status_code: int, exception: Exception | None = None) -> HttpResponse:
-    """
-    Generic error handler that can handle any HTTP status code.
-    """
-
     ERROR_MESSAGES = {
         400: "The request was invalid or cannot be processed.",
         403: "You don't have permission to access this resource.",
@@ -155,7 +118,6 @@ def handle_error(request: HttpRequest, status_code: int, exception: Exception | 
     }
     
     status_text = SHORT_ERROR_TEXTS.get(status_code, f"Error {status_code}")
-    
     error_message = ERROR_MESSAGES.get(status_code, "An unexpected error occurred.")
 
     context = {
@@ -173,11 +135,14 @@ def handle_error(request: HttpRequest, status_code: int, exception: Exception | 
 def error400(request: HttpRequest, exception: Exception | None = None) -> HttpResponse:
     return handle_error(request, 400, exception)
 
+
 def error403(request: HttpRequest, exception: Exception | None = None) -> HttpResponse:
     return handle_error(request, 403, exception)
+
 
 def error404(request: HttpRequest, exception: Exception | None = None) -> HttpResponse:
     return handle_error(request, 404, exception)
 
+
 def error500(request: HttpRequest, exception: Exception | None = None) -> HttpResponse:
-    return handle_error(request, 500, exception) 
+    return handle_error(request, 500, exception)
