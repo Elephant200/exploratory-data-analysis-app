@@ -11,7 +11,7 @@
         min-height: 0;
         display: flex;
         flex-direction: column;
-        padding: 0.5rem;
+        padding: 0.5rem 0.5rem 0 0.5rem;
     }
     .upload-box {
         flex-shrink: 0;
@@ -63,7 +63,7 @@
     </div>
     
     <form
-        class="mt-2"
+        class="mt-2 mb-1"
         hx-post="/api/chat/response/"
         hx-target="#chat-container"
         hx-swap="beforeend"
