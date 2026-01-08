@@ -53,7 +53,13 @@ def get_chat_response(request: HttpRequest) -> HttpResponse:
     session = _get_or_create_session()
     
     logger.debug(f"User message: {message}")
-    bot_response = session.send_message(message)
+    
+    if session.uploaded_file and not session.file_sent_to_chat:
+        bot_response = session.send_message_with_file(message, session.uploaded_file)
+        session.file_sent_to_chat = True
+    else:
+        bot_response = session.send_message(message)
+    
     bot_response_html = render_html_response(bot_response, session.uploaded_file_name)
 
     return render(request, 'chat/bot_message.html', {
@@ -66,27 +72,20 @@ def upload_file(request: HttpRequest) -> HttpResponse:
     try:
         file = request.FILES.get('file')
         if not file:
-            return HttpResponse("No file provided", status=400)
+            return JsonResponse({"error": "No file provided"}, status=400)
 
         session = _get_or_create_session()
         
-        uploaded_file = session.upload_file(file.file, file.name)
+        session.upload_file(file.file, file.name)
         
-        bot_response = session.send_message_with_file(
-            f"File uploaded: {file.name}. Please analyze this dataset.",
-            uploaded_file
-        )
-        
-        bot_response_html = render_html_response(bot_response, session.uploaded_file_name)
-
-        return render(request, 'chat/bot_message.html', {
-            'bot_response_html': bot_response_html,
+        return JsonResponse({
+            "success": True,
+            "filename": file.name,
+            "message": f"Uploaded: {file.name}"
         })
     except Exception as e:
         logger.error(f"Error uploading file: {e}")
-        return render(request, 'chat/bot_message.html', {
-            'bot_response_html': f"<p><strong>Error:</strong> {str(e)}</p>",
-        })
+        return JsonResponse({"error": str(e)}, status=400)
 
 
 @require_http_methods(["GET"])

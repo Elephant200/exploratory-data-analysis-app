@@ -118,6 +118,7 @@ class GeminiChatSession:
         self.uploaded_file: Optional[types.File] = None
         self.uploaded_file_name: Optional[str] = None
         self.has_file_uploaded: bool = False
+        self.file_sent_to_chat: bool = False
         self._chat = self._create_chat()
     
     def _create_chat(self):
@@ -211,5 +212,6 @@ class GeminiChatSession:
         self.uploaded_file = None
         self.uploaded_file_name = None
         self.has_file_uploaded = False
+        self.file_sent_to_chat = False
         self._chat = self._create_chat()
         logger.info("Chat session reset")
