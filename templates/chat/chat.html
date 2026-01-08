@@ -7,17 +7,14 @@
 <link rel="stylesheet" href="{% static 'css/pygments.css' %}"/>
 <style>
     .main-layout {
-        height: calc(100vh - 7.5rem);
+        flex: 1;
+        min-height: 0;
         display: flex;
         flex-direction: column;
-        overflow: hidden;
-    }
-    .chat-container {
-        flex: 1;
-        overflow-y: auto;
-        min-height: 0;
+        padding: 0.5rem;
     }
     .upload-box {
+        flex-shrink: 0;
         padding: 0.5rem 1rem;
         border: 1px dashed #4a4a4a;
         border-radius: 0.375rem;
@@ -45,6 +42,9 @@
     .upload-box.disabled {
         cursor: not-allowed;
         opacity: 0.6;
+    }
+    #message-form {
+        flex-shrink: 0;
     }
 </style>
 {% endblock %}

@@ -23,7 +23,8 @@
     <body data-bs-theme="dark">
         <!-- Navbar -->
         <nav
-            class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary sticky-top"
+            class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary"
+            style="flex-shrink:0"
         >
             <div class="container">
                 <a class="navbar-brand d-flex align-items-center" href="/">
@@ -76,10 +77,10 @@
         </nav>
 
         <!-- Main Content -->
-        <main class="py-4">{% block content %}{% endblock %}</main>
+        <main>{% block content %}{% endblock %}</main>
 
         <!-- Footer -->
-        <footer class="footer mt-auto py-3 bg-dark border-top border-secondary">
+        <footer class="footer py-2 bg-dark border-top border-secondary" style="flex-shrink:0">
             <div class="container text-center">
                 <span class="text-muted"
                     >Powered by
