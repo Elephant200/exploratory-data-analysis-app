@@ -7,3 +7,4 @@ pygments
 latex2mathml
 gunicorn
 whitenoise
+openpyxl
