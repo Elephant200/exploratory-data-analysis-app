@@ -267,10 +267,135 @@ tr:hover td {
     background-color: #3a3a3a;
 }
 
-/* Math */
+/* Math - MathML */
 math[display="block"] {
     padding-top: 1rem;
     padding-bottom: 1rem;
+}
+
+/* Math - KaTeX */
+.katex {
+    font-size: 1.1em;
+}
+
+.katex-display {
+    margin: 1rem 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.5rem 0;
+}
+
+.katex-display > .katex {
+    white-space: normal;
+}
+
+/* Ensure KaTeX colors work in dark mode */
+.katex .base {
+    color: var(--text-color);
+}
+
+/* Thinking indicator */
+.thinking-indicator {
+    padding: 4px 0;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Code execution indicator */
+.code-execution-indicator {
+    padding: 8px 12px;
+    background-color: rgba(40, 167, 69, 0.1);
+    border-left: 3px solid #28a745;
+    border-radius: 0 4px 4px 0;
+    margin: 10px 0;
+}
+
+.code-execution-indicator .spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.15em;
+}
+
+/* Streaming code blocks */
+.code-block {
+    background-color: #1e1e1e;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.code-block small {
+    display: block;
+    padding: 6px 12px;
+    background-color: #2d2d2d;
+    border-bottom: 1px solid #3a3a3a;
+}
+
+.code-block pre {
+    margin: 0;
+    padding: 12px;
+    background-color: #1e1e1e;
+}
+
+.code-block code {
+    background-color: transparent;
+    font-size: 0.9em;
+}
+
+/* Code result blocks */
+.code-result {
+    background-color: #1a1a1a;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.code-result small {
+    display: block;
+    padding: 6px 12px;
+    background-color: #252525;
+    border-bottom: 1px solid #3a3a3a;
+}
+
+.code-result pre {
+    margin: 0;
+    font-size: 0.85em;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Plain output styling (no syntax highlighting) */
+.output-pre {
+    background-color: #1a1a1a;
+    padding: 12px;
+}
+
+.output-code {
+    background-color: transparent !important;
+    color: #b0b0b0 !important;
+    font-family: "Courier New", Courier, monospace;
+}
+
+/* Streamed images */
+.message-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Highlight.js overrides for dark theme */
+.hljs {
+    background: transparent !important;
+    padding: 0 !important;
 }
 
 /* Responsive adjustments */

@@ -1,11 +1,12 @@
 import logging
 import os
+import json
 from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse, HttpRequest
+from django.http import JsonResponse, HttpResponse, HttpRequest, StreamingHttpResponse
 from django.views.decorators.http import require_http_methods
 
 from .services.gemini import GeminiChatSession
-from .utils.markdown import render_html_response
+from .utils.markdown import render_html_response, replace_input_file_name
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -54,9 +55,9 @@ def get_chat_response(request: HttpRequest) -> HttpResponse:
     
     logger.debug(f"User message: {message}")
     
-    if session.uploaded_file and not session.file_sent_to_chat:
+    # Always include file when one is uploaded (code execution sandbox needs it each turn)
+    if session.uploaded_file:
         bot_response = session.send_message_with_file(message, session.uploaded_file)
-        session.file_sent_to_chat = True
     else:
         bot_response = session.send_message(message)
     
@@ -65,6 +66,50 @@ def get_chat_response(request: HttpRequest) -> HttpResponse:
     return render(request, 'chat/bot_message.html', {
         'bot_response_html': bot_response_html,
     })
+
+
+@require_http_methods(["POST"])
+def stream_chat_response(request: HttpRequest) -> StreamingHttpResponse:
+    """Stream chat responses using Server-Sent Events (SSE)."""
+    message = request.POST.get('message')
+    if not message:
+        def error_stream():
+            yield f"data: {json.dumps({'type': 'error', 'content': 'No message provided'})}\n\n"
+            yield f"data: {json.dumps({'type': 'done'})}\n\n"
+        return StreamingHttpResponse(error_stream(), content_type='text/event-stream')
+
+    session = _get_or_create_session()
+    uploaded_file_name = session.uploaded_file_name
+    
+    logger.debug(f"Streaming user message: {message}")
+    
+    def event_stream():
+        try:
+            # Always include file when one is uploaded (code execution sandbox needs it each turn)
+            if session.uploaded_file:
+                stream = session.send_message_with_file_stream(message, session.uploaded_file)
+            else:
+                stream = session.send_message_stream(message)
+            
+            for chunk in stream:
+                # Replace input_file_0.csv with actual filename in content
+                if chunk.get('content') and uploaded_file_name:
+                    chunk['content'] = replace_input_file_name(chunk['content'], uploaded_file_name)
+                
+                yield f"data: {json.dumps(chunk)}\n\n"
+            
+            # Signal completion
+            yield f"data: {json.dumps({'type': 'done'})}\n\n"
+            
+        except Exception as e:
+            logger.error(f"Streaming error: {str(e)}")
+            yield f"data: {json.dumps({'type': 'error', 'content': str(e)})}\n\n"
+            yield f"data: {json.dumps({'type': 'done'})}\n\n"
+    
+    response = StreamingHttpResponse(event_stream(), content_type='text/event-stream')
+    response['Cache-Control'] = 'no-cache'
+    response['X-Accel-Buffering'] = 'no'  # Disable nginx buffering
+    return response
 
 
 @require_http_methods(["POST"])

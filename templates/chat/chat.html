@@ -64,11 +64,8 @@
     
     <form
         class="mt-2 mb-1"
-        hx-post="/api/chat/response/"
-        hx-target="#chat-container"
-        hx-swap="beforeend"
-        hx-indicator="#typing-indicator"
         id="message-form"
+        onsubmit="handleStreamSubmit(event)"
     >
         {% csrf_token %}
         <div class="input-group">
@@ -81,7 +78,7 @@
                 autocomplete="off"
                 required
             />
-            <button class="btn btn-primary" type="submit">Send</button>
+            <button class="btn btn-primary" type="submit" id="send-button">Send</button>
         </div>
     </form>
 </div>
@@ -142,11 +139,14 @@ fileInput.addEventListener('change', async function() {
     }
 });
 
-document.getElementById('message-form').addEventListener('submit', function() {
+// Update upload box status when sending a message with a file
+const originalHandleStreamSubmit = handleStreamSubmit;
+handleStreamSubmit = async function(event) {
     if (uploadedFilename && uploadBox.classList.contains('uploaded') && !uploadBox.classList.contains('analyzing')) {
         uploadBox.textContent = `Analyzing: ${uploadedFilename}`;
         uploadBox.classList.add('analyzing');
     }
-});
+    return originalHandleStreamSubmit(event);
+};
 </script>
 {% endblock %}

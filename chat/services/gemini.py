@@ -1,11 +1,12 @@
 from google import genai
 from google.genai import types
 import logging
-from typing import List, Optional, BinaryIO
+from typing import List, Optional, BinaryIO, Generator, Dict, Any
 import os
 import io
 import json
 import csv
+import base64
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -163,15 +164,116 @@ class GeminiChatSession:
         """
         try:
             logger.debug(f"Sending message with file: {message[:100]}...")
+            # Message first, then file reference - so model sees question before file context
             response = self._chat.send_message([
-                types.Part.from_uri(file_uri=file.uri, mime_type=file.mime_type),
-                message
+                message,
+                types.Part.from_uri(file_uri=file.uri, mime_type=file.mime_type)
             ])
             logger.debug(f"Response received: {response.text[:100] if response.text else 'No text'}...")
             return response.candidates[0].content.parts
         except Exception as e:
             logger.error(f"Gemini API error: {str(e)}")
             return [types.Part.from_text(text=f"Sorry, I ran into an error: {str(e)}")]
+
+    def _process_stream_chunk(self, chunk) -> Generator[Dict[str, Any], None, None]:
+        """Process a single stream chunk and yield content parts."""
+        try:
+            if not chunk or not chunk.candidates:
+                return
+            
+            candidate = chunk.candidates[0]
+            if not candidate.content or not candidate.content.parts:
+                return
+                
+            for part in candidate.content.parts:
+                if hasattr(part, 'text') and part.text:
+                    yield {"type": "text", "content": part.text}
+                elif hasattr(part, 'executable_code') and part.executable_code:
+                    yield {"type": "code", "content": part.executable_code.code}
+                elif hasattr(part, 'code_execution_result') and part.code_execution_result:
+                    yield {"type": "result", "content": part.code_execution_result.output}
+                elif hasattr(part, 'inline_data') and part.inline_data:
+                    try:
+                        image_data = base64.b64encode(
+                            part.inline_data.data if isinstance(part.inline_data.data, bytes) 
+                            else part.inline_data.data
+                        ).decode("utf-8")
+                        yield {"type": "image", "content": image_data}
+                    except Exception as e:
+                        logger.error(f"Error encoding image: {e}")
+                        yield {"type": "error", "content": f"Error encoding image: {str(e)}"}
+        except Exception as e:
+            logger.warning(f"Error processing chunk: {e}")
+            # Don't yield error for individual chunk failures, continue with stream
+
+    def send_message_stream(self, message: str) -> Generator[Dict[str, Any], None, None]:
+        """
+        Stream message responses as structured chunks.
+        
+        Args:
+            message: The user's message text
+            
+        Yields:
+            Dict with 'type' and 'content' keys for each response part
+        """
+        try:
+            logger.debug(f"Streaming message: {message[:100]}...")
+            stream = self._chat.send_message_stream(message)
+            
+            for chunk in stream:
+                yield from self._process_stream_chunk(chunk)
+                
+        except json.JSONDecodeError as e:
+            logger.error(f"Gemini API returned invalid JSON: {str(e)}")
+            yield {"type": "error", "content": "The API returned an invalid response. This may be due to server overload. Please try again."}
+        except Exception as e:
+            error_msg = str(e)
+            logger.error(f"Gemini streaming error: {error_msg}")
+            
+            # Provide more helpful error messages
+            if "overloaded" in error_msg.lower() or "capacity" in error_msg.lower():
+                yield {"type": "error", "content": "The model is currently overloaded. Please try again in a moment."}
+            elif "quota" in error_msg.lower():
+                yield {"type": "error", "content": "API quota exceeded. Please try again later."}
+            else:
+                yield {"type": "error", "content": f"Sorry, I ran into an error: {error_msg}"}
+
+    def send_message_with_file_stream(self, message: str, file: types.File) -> Generator[Dict[str, Any], None, None]:
+        """
+        Stream message responses with a file reference.
+        
+        Args:
+            message: The user's message text
+            file: The uploaded file object from Gemini
+            
+        Yields:
+            Dict with 'type' and 'content' keys for each response part
+        """
+        try:
+            logger.debug(f"Streaming message with file: {message[:100]}...")
+            # Message first, then file reference - so model sees question before file context
+            stream = self._chat.send_message_stream([
+                message,
+                types.Part.from_uri(file_uri=file.uri, mime_type=file.mime_type)
+            ])
+            
+            for chunk in stream:
+                yield from self._process_stream_chunk(chunk)
+                
+        except json.JSONDecodeError as e:
+            logger.error(f"Gemini API returned invalid JSON: {str(e)}")
+            yield {"type": "error", "content": "The API returned an invalid response. This may be due to server overload. Please try again."}
+        except Exception as e:
+            error_msg = str(e)
+            logger.error(f"Gemini streaming error: {error_msg}")
+            
+            # Provide more helpful error messages
+            if "overloaded" in error_msg.lower() or "capacity" in error_msg.lower():
+                yield {"type": "error", "content": "The model is currently overloaded. Please try again in a moment."}
+            elif "quota" in error_msg.lower():
+                yield {"type": "error", "content": "API quota exceeded. Please try again later."}
+            else:
+                yield {"type": "error", "content": f"Sorry, I ran into an error: {error_msg}"}
     
     def upload_file(self, file: BinaryIO, filename: str) -> types.File:
         """
