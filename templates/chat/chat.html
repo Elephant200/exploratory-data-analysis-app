@@ -104,6 +104,9 @@
 const uploadBox = document.getElementById('upload-box');
 const fileInput = document.getElementById('file-input');
 let uploadedFilename = null;
+const demoFileUrl = "{% static 'demo/CONED Natural Gas Data.csv' %}";
+let demoAutoSend = false;
+let demoMessageSent = false;
 
 function triggerUpload() {
     if (!uploadBox.classList.contains('uploaded') && !uploadBox.classList.contains('disabled')) {
@@ -111,10 +114,7 @@ function triggerUpload() {
     }
 }
 
-fileInput.addEventListener('change', async function() {
-    if (!this.files || !this.files[0]) return;
-    
-    const file = this.files[0];
+async function uploadFile(file) {
     uploadBox.textContent = 'Uploading...';
     uploadBox.classList.add('disabled');
     
@@ -142,6 +142,13 @@ fileInput.addEventListener('change', async function() {
                 messageInput.value = 'Please analyze this file and provide a summary of the data.';
                 messageInput.focus();
             }
+            if (demoAutoSend && !demoMessageSent && messageInput.value.trim()) {
+                demoMessageSent = true;
+                const messageForm = document.getElementById('message-form');
+                if (messageForm) {
+                    messageForm.requestSubmit();
+                }
+            }
         } else {
             uploadBox.textContent = `Error: ${data.error}`;
             uploadBox.classList.remove('disabled');
@@ -150,7 +157,43 @@ fileInput.addEventListener('change', async function() {
         uploadBox.textContent = 'Upload failed. Click to retry.';
         uploadBox.classList.remove('disabled');
     }
+}
+
+fileInput.addEventListener('change', async function() {
+    if (!this.files || !this.files[0]) return;
+    await uploadFile(this.files[0]);
 });
+
+async function startDemoUpload() {
+    if (uploadedFilename || uploadBox.classList.contains('uploaded')) return;
+    
+    uploadBox.textContent = 'Loading demo file...';
+    uploadBox.classList.add('disabled');
+    
+    try {
+        const response = await fetch(demoFileUrl);
+        if (!response.ok) {
+            throw new Error('Failed to fetch demo file');
+        }
+        const blob = await response.blob();
+        const demoFile = new File([blob], 'CONED Natural Gas Data.csv', {
+            type: blob.type || 'text/csv'
+        });
+        await uploadFile(demoFile);
+    } catch (error) {
+        uploadBox.textContent = 'Demo load failed. Click to upload a file.';
+        uploadBox.classList.remove('disabled');
+    }
+}
+
+const demoParam = new URLSearchParams(window.location.search).get('demo');
+if (demoParam === 'coned') {
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.searchParams.delete('demo');
+    history.replaceState({}, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+    demoAutoSend = true;
+    startDemoUpload();
+}
 
 // Update upload box status when sending a message with a file
 const originalHandleStreamSubmit = handleStreamSubmit;
