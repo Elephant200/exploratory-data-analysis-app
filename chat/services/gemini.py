@@ -184,7 +184,7 @@ class GeminiChatSession:
             candidate = chunk.candidates[0]
             if not candidate.content or not candidate.content.parts:
                 return
-                
+            
             for part in candidate.content.parts:
                 if hasattr(part, 'text') and part.text:
                     yield {"type": "text", "content": part.text}

@@ -233,6 +233,7 @@ async function streamChatResponse(message, csrfToken) {
     let currentTextContent = ''; // Accumulator for streaming text
     let codeExecutionIndicator = null;
     let hasReceivedContent = false; // Track if we've received any content yet
+    let seenImageData = new Set(); // Track seen images to prevent duplicates
     
     // Function to rebuild the entire content from parts
     function rebuildContent() {
@@ -365,11 +366,18 @@ async function streamChatResponse(message, csrfToken) {
                                     contentParts.push({ type: 'text', content: currentTextContent });
                                     currentTextContent = '';
                                 }
-                                
-                                // Add image
-                                contentParts.push({ type: 'image', content: data.content });
-                                rebuildContent();
-                                smartAutoScroll();
+                                if (data.content && seenImageData.has(data.content)) {
+                                    break;
+                                } else {
+                                    if (data.content) {
+                                        seenImageData.add(data.content);
+                                    }
+                                    
+                                    // Add image
+                                    contentParts.push({ type: 'image', content: data.content });
+                                    rebuildContent();
+                                    smartAutoScroll();
+                                }
                                 break;
                                 
                             case 'error':

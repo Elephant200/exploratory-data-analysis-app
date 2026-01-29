@@ -11,10 +11,6 @@
 body {
     background-color: #1a1a1a;
     color: var(--text-color);
-    height: 100vh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
 }
 
 main {

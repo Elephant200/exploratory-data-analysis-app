@@ -6,6 +6,12 @@
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/pygments.css' %}"/>
 <style>
+    body {
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
     .main-layout {
         flex: 1;
         min-height: 0;
@@ -129,6 +135,13 @@ fileInput.addEventListener('change', async function() {
             uploadBox.textContent = `Uploaded: ${data.filename}`;
             uploadBox.classList.remove('disabled');
             uploadBox.classList.add('uploaded');
+            
+            // Fill message input if empty
+            const messageInput = document.getElementById('message-input');
+            if (!messageInput.value.trim()) {
+                messageInput.value = 'Please analyze this file and provide a summary of the data.';
+                messageInput.focus();
+            }
         } else {
             uploadBox.textContent = `Error: ${data.error}`;
             uploadBox.classList.remove('disabled');
