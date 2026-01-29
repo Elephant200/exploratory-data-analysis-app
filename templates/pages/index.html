@@ -5,26 +5,59 @@
 {% block content %}
 <div class="container mt-5">
     <div class="text-center">
-        <h1 class="mb-4">Welcome to the Exploratory Data Analysis App</h1>
-        <p class="lead">
-            Unlock insights from your data with ease! Upload your dataset in CSV format and explore summary statistics, missing values, and correlation matrices. 
-            Simply chat with the bot and ask questions to get started.
+        <h1 class="display-4 fw-bold mb-4">Talk to Your Data</h1>
+        <p class="lead text-muted mb-4">
+            Upload a dataset and chat with an agentic AI that actually understands it—no coding required, no complicated setup. 
+            Just you, your data, and an autonomous AI agent that analyzes, visualizes, and helps you make sense of it in plain English. 
+            Ask questions, get instant analysis, and watch visualizations appear in real-time as the agent works.
         </p>
     </div>
 
     <div class="text-center mt-5">
-        <a class="btn btn-primary btn-lg" href="/chat">Start Analyzing</a>
+        <a class="btn btn-primary btn-lg px-5 py-3" href="/chat">
+            <i class="fas fa-comment-dots me-2"></i>Start Analyzing
+        </a>
     </div>
 
     <!-- Demo Image Section -->
-    <div class="text-center mt-4">
-        <img src="{% static 'assets/demo.png' %}" alt="Demo of the App" class="img-fluid rounded shadow" style="max-width: 80%; height: auto;">
-        <p class="mt-3 text-muted">A quick preview of the Exploratory Data Analysis App in action.</p>
+    <div class="text-center mt-5">
+        <img src="{% static 'assets/demo.png' %}" alt="Demo of the EDA Chatbot interface" class="img-fluid rounded shadow" style="max-width: 80%; height: auto;">
+        <p class="mt-4 text-muted">
+            Upload CSV, Excel, JSON, TSV, or text files and start exploring your data through conversation
+        </p>
+    </div>
+
+    <!-- Quick Features -->
+    <div class="row mt-5 mb-5 g-4">
+        <div class="col-md-4">
+            <div class="text-center">
+                <i class="fas fa-upload fa-3x text-primary mb-3"></i>
+                <h5>Upload Anything</h5>
+                <p class="text-muted">CSV, Excel, JSON, TSV—we handle the conversion automatically</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="text-center">
+                <i class="fas fa-brain fa-3x text-primary mb-3"></i>
+                <h5>Agentic AI</h5>
+                <p class="text-muted">Autonomous AI agent analyzes your data and writes Python code on the fly</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="text-center">
+                <i class="fas fa-chart-line fa-3x text-primary mb-3"></i>
+                <h5>Live Agent Actions</h5>
+                <p class="text-muted">Watch the agent execute code, generate statistics, and create charts in real-time</p>
+            </div>
+        </div>
     </div>
 
     <!-- Call-to-Action Section -->
     <div class="text-center mt-5 mb-5">
-        <button class="btn btn-primary btn-lg" onclick="window.location.href='/about'">More Info</button>
+        <p class="fs-5 mb-3">Want to learn more about how it works?</p>
+        <a class="btn btn-outline-primary btn-lg" href="/about">
+            <i class="fas fa-info-circle me-2"></i>Learn More
+        </a>
     </div>
 </div>
 {% endblock %}
