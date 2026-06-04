@@ -2,7 +2,7 @@
 
 An agentic AI system that turns data exploration into a conversation. Upload your dataset, ask questions in plain English, and watch as an autonomous AI agent analyzes your data, writes Python code, and generates visualizations in real-time.
 
-**Live Demo:** https://exploratory-data-analysis.replit.app
+**Live Demo:** https://exploratory-data-analysis-app.vercel.app
 
 ## What It Does
 
@@ -140,4 +140,4 @@ This project is open source and available under the MIT License.
 
 - Powered by Google Gemini 3.0 Flash
 - Built with Django and Bootstrap
-- Hosted on Replit
+- Hosted on Vercel
