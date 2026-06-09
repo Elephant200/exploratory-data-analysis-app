@@ -1,0 +1,281 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #131009;
+  --ink-raised: #1d1912;
+  --ink-panel: #241f15;
+  --ink-border: #38301e;
+  --ink-border-strong: #4e4228;
+  --paper: #ead8ae;
+  --paper-dim: #a8926a;
+  --muted: #6e5c40;
+  --amber: #f0a83f;
+  --amber-soft: rgba(240, 168, 63, 0.12);
+  --teal: #72b898;
+  --teal-soft: rgba(114, 184, 152, 0.1);
+  --red: #d06040;
+  --red-soft: rgba(208, 96, 64, 0.12);
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-raised: var(--ink-raised);
+  --color-ink-panel: var(--ink-panel);
+  --color-ink-border: var(--ink-border);
+  --color-ink-border-strong: var(--ink-border-strong);
+  --color-paper: var(--paper);
+  --color-paper-dim: var(--paper-dim);
+  --color-muted: var(--muted);
+  --color-amber: var(--amber);
+  --color-amber-soft: var(--amber-soft);
+  --color-teal: var(--teal);
+  --color-teal-soft: var(--teal-soft);
+  --color-red: var(--red);
+  --color-red-soft: var(--red-soft);
+  --font-display: var(--font-dm-sans);
+  --font-sans: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
+}
+
+html {
+  background: var(--ink);
+}
+
+body {
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-plex-sans), sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Savannah atmosphere: warm glows, no grid. */
+.savanna-bg {
+  position: relative;
+}
+.savanna-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 90% 45% at 50% -8%, rgba(240, 168, 63, 0.07), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 15% 60%, rgba(114, 184, 152, 0.04), transparent 65%),
+    radial-gradient(ellipse 50% 35% at 85% 40%, rgba(90, 143, 185, 0.03), transparent 60%);
+  z-index: 0;
+}
+.savanna-bg > * {
+  position: relative;
+  z-index: 1;
+}
+
+::selection {
+  background: rgba(240, 168, 63, 0.3);
+}
+
+/* ---------- motion ---------- */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-rise {
+  animation: rise 0.45s cubic-bezier(0.21, 0.6, 0.35, 1) both;
+}
+
+@keyframes caret-blink {
+  0%, 45% { opacity: 1; }
+  50%, 95% { opacity: 0; }
+}
+.streaming-caret::after {
+  content: "▍";
+  color: var(--amber);
+  animation: caret-blink 1s steps(1) infinite;
+  margin-left: 2px;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.8); }
+}
+.pulse-dot {
+  animation: pulse-dot 1.4s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spinner {
+  animation: spin 0.8s linear infinite;
+}
+
+/* ---------- chat prose (markdown output) ---------- */
+
+.prose-chat {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.prose-chat > * + * {
+  margin-top: 0.75em;
+}
+.prose-chat h1,
+.prose-chat h2,
+.prose-chat h3,
+.prose-chat h4 {
+  font-family: var(--font-dm-sans), sans-serif;
+  font-weight: 600;
+  color: var(--paper);
+  line-height: 1.25;
+  margin-top: 1.4em;
+}
+.prose-chat h1 { font-size: 1.45em; }
+.prose-chat h2 { font-size: 1.3em; }
+.prose-chat h3 { font-size: 1.15em; }
+.prose-chat h4 { font-size: 1.02em; }
+.prose-chat strong {
+  color: var(--paper);
+  font-weight: 600;
+}
+.prose-chat a {
+  color: var(--amber);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-chat ul,
+.prose-chat ol {
+  padding-left: 1.4em;
+}
+.prose-chat ul { list-style: disc; }
+.prose-chat ol { list-style: decimal; }
+.prose-chat li + li { margin-top: 0.3em; }
+.prose-chat li::marker { color: var(--amber); }
+.prose-chat blockquote {
+  border-left: 2px solid var(--amber);
+  padding-left: 1em;
+  color: var(--paper-dim);
+}
+.prose-chat code {
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 0.86em;
+  background: var(--ink-panel);
+  border: 1px solid var(--ink-border);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+  color: var(--teal);
+}
+.prose-chat pre {
+  background: var(--ink-raised);
+  border: 1px solid var(--ink-border);
+  border-radius: 8px;
+  padding: 0.9em 1em;
+  overflow-x: auto;
+}
+.prose-chat pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--paper);
+  font-size: 0.86em;
+  line-height: 1.6;
+}
+.prose-chat table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875em;
+  font-variant-numeric: tabular-nums;
+  display: block;
+  overflow-x: auto;
+}
+.prose-chat th {
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--amber);
+  text-align: left;
+  border-bottom: 1px solid var(--ink-border-strong);
+  padding: 0.45em 0.8em;
+}
+.prose-chat td {
+  border-bottom: 1px solid var(--ink-border);
+  padding: 0.45em 0.8em;
+  color: var(--paper-dim);
+}
+.prose-chat hr {
+  border: none;
+  border-top: 1px dashed var(--ink-border-strong);
+  margin: 1.4em 0;
+}
+.prose-chat .katex {
+  font-size: 1.05em;
+}
+.prose-chat .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.3em 0;
+}
+
+/* ---------- highlight.js theme (savannah palette) ---------- */
+
+.hljs {
+  color: var(--paper);
+  background: transparent;
+}
+.hljs-comment,
+.hljs-quote {
+  color: var(--muted);
+  font-style: italic;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-built_in {
+  color: var(--amber);
+}
+.hljs-string,
+.hljs-regexp,
+.hljs-addition {
+  color: var(--teal);
+}
+.hljs-number,
+.hljs-symbol,
+.hljs-bullet {
+  color: #c8a8e0;
+}
+.hljs-title,
+.hljs-function .hljs-title,
+.hljs-title.function_ {
+  color: #88bfe8;
+}
+.hljs-attr,
+.hljs-attribute,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-params {
+  color: var(--paper);
+}
+.hljs-meta,
+.hljs-name,
+.hljs-type,
+.hljs-class .hljs-title,
+.hljs-title.class_ {
+  color: #e8c070;
+}
+.hljs-deletion {
+  color: var(--red);
+}
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: 600; }
+
+/* ---------- scrollbars ---------- */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ink-border-strong) transparent;
+}
